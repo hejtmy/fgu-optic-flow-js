@@ -8,7 +8,7 @@ var radius = '0.'+ Math.floor(Math.random() * 9) + 1;
 var focalLength = canvas.width *2;
 var warp = 0;
 var centerX, centerY;
-var speed = 10000;
+var speed = 5000;
 var starSize = 5;
 
 var random = false;
@@ -99,20 +99,18 @@ function drawStars(){
             c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
         }
     }
-
 }
 
 document.getElementById('trace').addEventListener("click", function(e){
     window.warp = window.warp==1 ? 0 : 1;
+    initializeStars();
     window.c.clearRect(0, 0, window.canvas.width, window.canvas.height);
-    executeFrame();
 });
 
 document.getElementById('random').addEventListener("click", function(e){
     window.random = window.random ? false : true;
     initializeStars();
     window.c.clearRect(0, 0, window.canvas.width, window.canvas.height);
-    executeFrame();
 });
 
 executeFrame();
