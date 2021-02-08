@@ -18,6 +18,8 @@ var i;
 
 var animate = true;
 
+const arduinoController = new ArduinoController();
+
 initializeStars();
 
 function executeFrame(){
@@ -28,6 +30,8 @@ function executeFrame(){
 }
 
 function initializeStars(){
+    arduinoController.blink();
+
   centerX = canvas.width / 2;
   centerY = canvas.height / 2;
   
@@ -113,5 +117,8 @@ document.getElementById('random').addEventListener("click", function(e){
     window.c.clearRect(0, 0, window.canvas.width, window.canvas.height);
 });
 
-executeFrame();
+document.getElementById('arduino-connect-btn').addEventListener("click", function(e){
+   arduinoController.connect();
+})
 
+executeFrame();
