@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Web Serial</title>
-  <meta http-equiv="origin-trial" content="AiM0rMslVx2jumsJjQ144QeZTScNmGVMYzBuXoaMQwCd7UHWbQH8Rg20adCN7XWaTMai4HvsUIyx3+blPPiupwEAAABreyJvcmlnaW4iOiJodHRwczovL3VuamF2YXNjcmlwdGVyLXdlYi1zZXJpYWwtZXhhbXBsZS5nbGl0Y2gubWU6NDQzIiwiZmVhdHVyZSI6IlNlcmlhbCIsImV4cGlyeSI6MTU5Njk3OTA1NX0=">
   <style>
     .repo-link {
       position: fixed;
@@ -16,7 +15,10 @@
 </head>
 <body>
 
-  <button id="connect-to-serial">Connect to serial port</button>
+  <button id="connect-btn">Connect arduino</button>
+  <button id="blink-btn">Blink</button>
+  <button id="pulseup-btn">Pulse up</button>
+  <button id="pulsedown-btn">Pulse down</button>
   <button id="get-serial-messages">Get serial messages</button>
   <div>
     <form id="message-form">
@@ -28,25 +30,17 @@
 
   <script src="serial.js"></script>
   <script>
-    const serialController = new SerialController();
-    const connect = document.getElementById('connect-to-serial');
+    const arduinoController = new ArduinoController();
     const getSerialMessages = document.getElementById('get-serial-messages');
     const messageForm = document.getElementById('message-form');
     const messageInput = document.getElementById('message-input');
     const submitButton = document.getElementById('submit-button');
+    const connectButton = document.getElementById('connect-btn');
     const serialMessagesContainer = document.getElementById('serial-messages-container');
-
-    connect.addEventListener('pointerdown', () => {
-      serialController.init();
-
-      serialMessagesContainer.removeAttribute('disabled');
-      messageInput.removeAttribute('disabled');
-      submitButton.removeAttribute('disabled');
-    });
 
     messageForm.addEventListener('submit', event => {
       event.preventDefault();
-      serialController.write(event.target.firstElementChild.value);
+      arduinoController.serialController.write(event.target.firstElementChild.value);
       getSerialMessage();
     });
 
@@ -54,10 +48,30 @@
       getSerialMessage();
     });
 
+
+    document.getElementById('blink-btn').addEventListener('click', async () => {
+        arduinoController.blink();
+    });  
+    document.getElementById('pulseup-btn').addEventListener('click', async () => {
+        arduinoController.pulseUp();
+    });  
+    document.getElementById('pulsedown-btn').addEventListener('click', async () => {
+        arduinoController.pulseDown();
+    });  
     async function getSerialMessage() {
-      await serialController.read() + '\n';
-      serialMessagesContainer.innerText += serialController.value;
+      await arduinoController.serialController.read() + '\n';
+      serialMessagesContainer.innerText += arduinoController.serialController.lastValue + "\n";
     }
+
+    connectButton.addEventListener('click', async () => {
+        var connected = await arduinoController.connect();
+        if(connected){
+            connectButton.innerHTML = "Disconnect";
+                serialMessagesContainer.removeAttribute('disabled');
+                messageInput.removeAttribute('disabled');
+                submitButton.removeAttribute('disabled');
+        }
+    })
 
   </script>
 </body>

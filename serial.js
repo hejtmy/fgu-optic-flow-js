@@ -15,15 +15,57 @@ class LineBreakTransformer {
   }
 }
 
+class ArduinoController {
+    serialController;
+    connected;
+
+    constructor(){
+        this.serialController = new SerialController();
+    }
+
+    async connect(){
+        await this.serialController.init();
+        if(this.connected) return;
+        // Necessary for Arduino to "get its footing"
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        // add timeout for the effort to conenct
+        this.serialController.write("WHO!");
+        await this.serialController.read((value) => {
+            console.log("value came " + value);
+            if(value == "ARDUINO"){
+                this.serialController.stopReading();
+                this.serialController.write("DONE!");
+                this.connected = true;
+            }
+        })
+        return this.connected;
+    }
+
+    blink(){
+        if(!this.connected) return;
+        this.serialController.write("BLINK!");
+    }
+    pulseUp(){
+        if(!this.connected) return;
+        this.serialController.write("PULSE+!");
+    }
+    pulseDown(){
+        if(!this.connected) return;
+        this.serialController.write("PULSE-!");
+    }
+
+}
+
 class SerialController {
-  reader;
-  writer;
-  encoder = new TextEncoder();
-  value;
-  port;
-  isReading;
+    reader;
+    writer;
+    encoder = new TextEncoder();
+    lastValue;
+    port;
+    isReading;
 
     async init() {
+        if(this.port != null) return;
         if ('serial' in navigator) {
             try {
                 this.port = await navigator.serial.requestPort();
@@ -49,11 +91,11 @@ class SerialController {
         return await this.writer.write(dataArrayBuffer);
     }
 
-    async connect(){
-        //await this.read
+    stopReading(){
+        this.isReading = false;
     }
 
-    async read(){
+    async read(onMessage, onFinished){
         let keepReading = true;
         while (this.port.readable && keepReading) {
             const textDecoder = new TextDecoderStream();
@@ -70,14 +112,16 @@ class SerialController {
                         break;
                     }
                     // Shoot an event
-                    this.value += value + "\n";
+                    this.lastValue = value;
                     console.log(value);
+                    if(onMessage) onMessage(value);
                     if(value == "DONE" || value == "TIME IS UP"){
                         break;
                     }
                 }
             } finally {
                 keepReading = false;
+                if (onFinished) onFinished();
                 decodingReader.cancel();
                 await readableStreamClosed.catch(() => { /* Ignore the error */ });
             }

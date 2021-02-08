@@ -10,3 +10,5 @@ chrome://flags/#enable-experimental-web-platform-features
 
 ## Tuts
 https://dev.to/unjavascripter/the-amazing-powers-of-the-web-web-serial-api-3ilc
+
+https://github.com/UnJavaScripter/web-serial-example/blob/master/src/app.ts
