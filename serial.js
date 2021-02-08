@@ -21,13 +21,14 @@ class SerialController {
   encoder = new TextEncoder();
   value;
   port;
+  isReading;
 
     async init() {
         if ('serial' in navigator) {
             try {
                 this.port = await navigator.serial.requestPort();
                 await this.port.open({ baudRate: 9600 });
-                this.reader = this.port.readable.getReader();
+                //this.reader = this.port.readable.getReader();
                 this.writer = this.port.writable.getWriter();
                 await this.port.setSignals({ dataTerminalReady: true, requestToSend: true});
                 let signals = await this.port.getSignals();
@@ -48,15 +49,38 @@ class SerialController {
         return await this.writer.write(dataArrayBuffer);
     }
 
+    async connect(){
+        //await this.read
+    }
+
     async read(){
-        const decoder = new TextDecoder();
-        try {
-          const readerData = await this.reader.read();
-          return decoder.decode(readerData.value);
-        } catch (err) {
-          const errorMessage = `error reading data: ${err}`;
-          console.error(errorMessage);
-          return errorMessage;
+        let keepReading = true;
+        while (this.port.readable && keepReading) {
+            const textDecoder = new TextDecoderStream();
+            const readableStreamClosed = this.port.readable.pipeTo(textDecoder.writable);
+            const decodingReader = textDecoder.readable
+                .pipeThrough(new TransformStream(new LineBreakTransformer()))
+                .getReader();
+            this.isReading = true;
+            try{
+                while(this.isReading){
+                    const { value, done } = await decodingReader.read();
+                    if (done) {
+                        decodingReader.releaseLock();
+                        break;
+                    }
+                    // Shoot an event
+                    this.value += value + "\n";
+                    console.log(value);
+                    if(value == "DONE" || value == "TIME IS UP"){
+                        break;
+                    }
+                }
+            } finally {
+                keepReading = false;
+                decodingReader.cancel();
+                await readableStreamClosed.catch(() => { /* Ignore the error */ });
+            }
         }
-      }
+    }
 }

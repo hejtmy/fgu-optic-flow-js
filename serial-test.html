@@ -55,7 +55,8 @@
     });
 
     async function getSerialMessage() {
-      serialMessagesContainer.innerText += await serialController.read() + '\n';
+      await serialController.read() + '\n';
+      serialMessagesContainer.innerText += serialController.value;
     }
 
   </script>
