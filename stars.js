@@ -68,10 +68,20 @@ function moveStars(){
         }
 }
 
+function drawCentralCross(context, canvas, thickness = 5, length = 40){
+    // vertical
+    context.fillStyle = "#FF0000";
+    context.fillRect(canvas.width/2 - length/2, canvas.height/2 - thickness/2, length, thickness);
+    // horizontal
+    context.fillStyle = "#FF0000";
+    context.fillRect(canvas.width/2-thickness/2, canvas.height/2 - (length/2), thickness, length);
+}
+
 function drawStars(){
   var pixelX, pixelY, pixelRadius;
   
-    // Resize to the screen
+    //TODO - change to ONwindowsResuze
+    // Resize to the screen - change to ON 
     if(canvas.width != window.innerWidth || canvas.width != window.innerWidth){
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -103,6 +113,7 @@ function drawStars(){
             c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
         }
     }
+    drawCentralCross(c, canvas);
 }
 
 document.getElementById('trace').addEventListener("click", function(e){
