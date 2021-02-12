@@ -1,0 +1,451 @@
+!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - geometry - minecraft</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link type="text/css" rel="stylesheet" href="three/exammples/main.css">
+        <style>
+			#blocker {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0,0,0,0.5);
+			}
+
+			#instructions {
+				width: 100%;
+				height: 100%;
+
+				display: -webkit-box;
+				display: -moz-box;
+				display: box;
+
+				-webkit-box-orient: horizontal;
+				-moz-box-orient: horizontal;
+				box-orient: horizontal;
+
+				-webkit-box-pack: center;
+				-moz-box-pack: center;
+				box-pack: center;
+
+				-webkit-box-align: center;
+				-moz-box-align: center;
+				box-align: center;
+
+				color: #ffffff;
+				text-align: center;
+				font-family: Arial;
+				font-size: 14px;
+				line-height: 24px;
+
+				cursor: pointer;
+			}
+			body {
+				background-color: #bfd1e5;
+				color: #61443e;
+			}
+			a {
+				color: #a06851;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="blocker">
+
+			<div id="instructions">
+                Click to start
+			</div>
+
+		</div>
+        <div id="container"></div>
+		<script type="module">
+
+			import * as THREE from './src/three.module.js';
+
+			import Stats from './src/stats.module.js';
+
+			import { BufferGeometryUtils } from './src/BufferGeometryUtils.js';
+
+            class Trial{
+                constructor(start, goal1, goal2, decoy){
+                    this.state = "prepared";
+                    this.start = new Goal(start);
+                    this.goal1 = new Goal(goal1);
+                    this.goal2 = new Goal(goal2);
+                    this.decoy = new Goal(decoy);
+                }
+
+                decoyStart(){
+                    var pos = new THREE.Vector3().addVectors(this.start.position, this.decoy.position);
+                    pos.divideScalar(2);
+                    return new Goal(pos);
+                }
+                hideAll(){
+                    this.start.hide();
+                    this.goal1.hide();
+                    this.decoy.hide();
+                    this.goal2.hide();
+                }
+                correctAnswer(){
+                    // cross product of vector from end to middle and from
+                    // middle to start
+                    let middle = this.decoyStart().position;
+                    console.log(middle);
+                    let vec1 = new THREE.Vector3().subVectors(middle, this.goal2.position);
+                    console.log(vec1);
+                    let vec2 = new THREE.Vector3().subVectors(this.start.position, middle);
+                    console.log(vec2);
+                    const out = new THREE.Vector3().crossVectors(vec1, vec2)
+                    console.log(out);
+                    if(out.y > 0) return "left";
+                    else return "right";
+                }
+            }
+
+            class Goal{
+                constructor(position, col = 0xDC143C){
+                    this.position = position;
+                    const geometry = new THREE.BoxGeometry(10,10,10);
+			        const material = new THREE.MeshBasicMaterial( { color: col } );
+                    const cube = new THREE.Mesh( geometry, material );
+                    this.cube = cube;
+                    this.cube.position.set(position.x, position.y, position.z);
+                }
+
+                show(){
+			        scene.add( this.cube );
+                }
+                hide(){
+                    this.cube.geometry.dispose();
+                    this.cube.material.dispose();
+                    scene.remove(this.cube);
+                }
+            }
+
+			let container, stats;
+
+            let camera, controls, scene, renderer;
+            
+            let goal = null;
+            let startingRotation, targetRotation, startingPosition, rotationTime;
+            let rotationSpeed = 0.5;
+            let currentTrial;
+
+            let movementTime;
+            let movementSpeed = 250;
+            let deltaMovementSpeed;
+
+			let prevTime = performance.now();
+			const velocity = new THREE.Vector3();
+			const direction = new THREE.Vector3();
+			const vertex = new THREE.Vector3();
+            const color = new THREE.Color();
+            
+            let blocker, instructions;
+
+            let goalOrder = 0;
+
+			const worldWidth = 128, worldDepth = 128;
+			const worldHalfWidth = worldWidth / 2;
+			const worldHalfDepth = worldDepth / 2;
+			const data = generateHeight( worldWidth, worldDepth );
+
+			const clock = new THREE.Clock();
+
+			init();
+			animate();
+
+			function init() {
+                blocker = document.getElementById( 'blocker' );
+                instructions = document.getElementById( 'instructions' );
+
+                document.addEventListener( 'keydown', onKeyDown );
+
+				container = document.getElementById( 'container' );
+
+				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 20000 );
+				camera.position.y = getY( worldHalfWidth, worldHalfDepth ) * 100 + 100;
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0x000000 );
+
+				const matrix = new THREE.Matrix4();
+
+				const pxGeometry = new THREE.PlaneGeometry( 100, 100 );
+				pxGeometry.attributes.uv.array[ 1 ] = 0.5;
+				pxGeometry.attributes.uv.array[ 3 ] = 0.5;
+				pxGeometry.rotateY( Math.PI / 2 );
+				pxGeometry.translate( 50, 0, 0 );
+
+				const nxGeometry = new THREE.PlaneGeometry( 100, 100 );
+				nxGeometry.attributes.uv.array[ 1 ] = 0.5;
+				nxGeometry.attributes.uv.array[ 3 ] = 0.5;
+				nxGeometry.rotateY( - Math.PI / 2 );
+				nxGeometry.translate( - 50, 0, 0 );
+
+				const pyGeometry = new THREE.PlaneGeometry( 100, 100 );
+				pyGeometry.attributes.uv.array[ 5 ] = 0.5;
+				pyGeometry.attributes.uv.array[ 7 ] = 0.5;
+				pyGeometry.rotateX( - Math.PI / 2 );
+				pyGeometry.translate( 0, 50, 0 );
+
+				const pzGeometry = new THREE.PlaneGeometry( 100, 100 );
+				pzGeometry.attributes.uv.array[ 1 ] = 0.5;
+				pzGeometry.attributes.uv.array[ 3 ] = 0.5;
+				pzGeometry.translate( 0, 0, 50 );
+
+				const nzGeometry = new THREE.PlaneGeometry( 100, 100 );
+				nzGeometry.attributes.uv.array[ 1 ] = 0.5;
+				nzGeometry.attributes.uv.array[ 3 ] = 0.5;
+				nzGeometry.rotateY( Math.PI );
+				nzGeometry.translate( 0, 0, - 50 );
+
+				const geometries = [];
+
+				for ( let z = 0; z < worldDepth; z ++ ) {
+					for ( let x = 0; x < worldWidth; x ++ ) {
+						const h = getY( x, z );
+
+						matrix.makeTranslation(
+							x * 100 - worldHalfWidth * 100,
+							h * 100,
+							z * 100 - worldHalfDepth * 100
+						);
+
+						const px = getY( x + 1, z );
+						const nx = getY( x - 1, z );
+						const pz = getY( x, z + 1 );
+						const nz = getY( x, z - 1 );
+
+						geometries.push( pyGeometry.clone().applyMatrix4( matrix ) );
+
+						if ( ( px !== h && px !== h + 1 ) || x === 0 ) {
+							geometries.push( pxGeometry.clone().applyMatrix4( matrix ) );
+						}
+
+						if ( ( nx !== h && nx !== h + 1 ) || x === worldWidth - 1 ) {
+							geometries.push( nxGeometry.clone().applyMatrix4( matrix ) );
+						}
+
+						if ( ( pz !== h && pz !== h + 1 ) || z === worldDepth - 1 ) {
+							geometries.push( pzGeometry.clone().applyMatrix4( matrix ) );
+						}
+						if ( ( nz !== h && nz !== h + 1 ) || z === 0 ) {
+							geometries.push( nzGeometry.clone().applyMatrix4( matrix ) );
+						}
+					}
+				}
+				const geometry = BufferGeometryUtils.mergeBufferGeometries( geometries );
+				geometry.computeBoundingSphere();
+
+				const texture = new THREE.TextureLoader().load( 'three/examples/textures/minecraft/atlas.png' );
+				texture.magFilter = THREE.NearestFilter;
+
+				const mesh = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide } ) );
+				scene.add( mesh );
+
+				const ambientLight = new THREE.AmbientLight( 0xcccccc );
+				scene.add( ambientLight );
+
+				const directionalLight = new THREE.DirectionalLight( 0xffffff, 2 );
+				directionalLight.position.set( 1, 1, 0.5 ).normalize();
+				scene.add( directionalLight );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+				stats = new Stats();
+				container.appendChild( stats.dom );
+				//
+                window.addEventListener( 'resize', onWindowResize );
+
+				instructions.addEventListener( 'click', function () {
+                    if(currentTrial == null) startExperiment();
+				} );
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function generateHeight( width, height ) {
+				const data = [], size = width * height, z = Math.random() * 100;
+
+                let quality = 2;
+                
+				for ( let j = 0; j < 4; j ++ ) {
+                    if ( j === 0 ) for ( let i = 0; i < size; i ++ ) data[ i ] = 0;
+                }
+
+                    return data;
+			}
+
+			function getY( x, z ) {
+				return ( data[ x + z * worldWidth ] * 0.2 ) | 0;
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				render();
+				stats.update();
+			}
+
+            function render() {
+                let delta = clock.getDelta();
+                if(goal != null){ 
+                    const targetPosition = new THREE.Vector3(goal.position.x, camera.position.y, goal.position.z);
+                    updateRotationPosition(targetPosition, delta);
+                }
+				renderer.render( scene, camera );
+			}
+
+            function updateRotationPosition(targetPosition, delta){
+                if(rotationTime < 1){
+                    console.log("rotating");
+                    rotationTime += (delta * rotationSpeed);
+                    THREE.Quaternion.slerp( startingRotation, targetRotation, camera.quaternion, rotationTime); // added
+                    return;
+                }
+                if(movementTime < 1){
+                    console.log("moving");
+                    movementTime += (delta * deltaMovementSpeed);
+                    camera.position.lerpVectors(startingPosition, targetPosition, movementTime);
+                    return;
+                }
+                goalReached();
+            }            
+
+            function setNextGoal(g){
+                goal = g;
+                g.show();
+                deltaMovementSpeed = 1/(g.position.distanceTo(camera.position)/movementSpeed);
+                startingPosition = new THREE.Vector3().copy(camera.position);
+                startingRotation = new THREE.Quaternion().copy(camera.quaternion);
+                const targetPos = new THREE.Vector3(g.position.x, camera.position.y, g.position.z);
+                camera.lookAt(targetPos);
+                targetRotation = new THREE.Quaternion().copy(camera.quaternion);
+                camera.applyQuaternion(startingRotation);
+                rotationTime = 0;
+                movementTime = 0;
+            }
+
+            function goalReached(){
+                if(currentTrial.target == "goal1"){
+                    currentTrial.target = "goal2";
+                    currentTrial.goal1.hide();
+                    setNextGoal(currentTrial.goal2);
+                    return;
+                }
+                if(currentTrial.target == "goal2"){
+                    let decoyGoal = currentTrial.decoyStart();
+                    setNextGoal(decoyGoal);
+                    movementTime = 1;
+                    currentTrial.start.show();
+                    currentTrial.decoy.show();
+                    decoyGoal.hide();
+                    currentTrial.target = "response";
+                    return;
+                }
+                if(currentTrial.target == "response"){
+                    blocker.style.display = 'block';
+                    instructions.style.display = '';
+                    instructions.innerHTML = "Press left or right arrow key"
+                    blocker.style.backgroundColor = "transparent";
+                    cancelGoal();
+                }
+            }
+
+            function cancelGoal(){
+                goal.hide();
+                goal = null;
+            }
+
+            function startTrial(trial){
+                currentTrial = trial;
+                //camera.position.set(trial.start);
+                const targetPos = new THREE.Vector3(trial.goal1.position.x, camera.position.y, trial.goal1.position.z);
+                camera.position.set(trial.start.position.x, camera.position.y, trial.start.position.z);
+                setNextGoal(trial.goal1);
+                camera.lookAt(targetPos);
+                rotationTime = 1;
+                movementTime = 0;
+                currentTrial.target = "goal1";
+            }
+
+            function finishTrial(correct){
+                console.log(correct);
+                blocker.style.display = 'block';
+                instructions.style.display = '';
+                if(correct){
+                    var txt = "Correct";
+                } else{
+                    var txt = "Incorrect";
+                }
+                txt += "<br> Click for next trial";
+                instructions.innerHTML = txt;
+                currentTrial = null;
+            }
+
+            function hideBlockers(){
+
+                instructions.style.display = 'none';
+                blocker.style.display = 'none';
+            }
+
+            function startExperiment(){
+                hideBlockers();
+                const height = 50;
+                const start = new THREE.Vector3(0,height,0);
+                // TODO - this is a bias pfor positive turns
+                const decoy = new THREE.Vector3().random().clampLength(0.3,1).subScalar(0.5).multiplyScalar(500).setY(height);
+                const goal1 = new THREE.Vector3().random().multiplyScalar(750).setY(height);
+                const goal2 = new THREE.Vector3().random().multiplyScalar(750).setY(height);
+
+                var trial = new Trial(start, goal1, goal2, decoy);
+                trial.correctAnswer();
+                startTrial(trial);
+            }
+
+            function stopExperiment(){
+
+            }
+            
+            function handleResponse(response){
+                if(currentTrial != null){
+                    if(currentTrial.target == "response"){
+                    //if()
+                        currentTrial.hideAll();
+                        finishTrial(response == currentTrial.correctAnswer());
+                    }
+                }
+            }
+
+            function onKeyDown ( event ) {
+                switch ( event.code ) {
+                    case 'KeyG':
+                        if(currentTrial == null ){
+                            startExperiment();
+                        } else {
+                            stopExperiment();
+                        }
+                        break;
+                    case 'ArrowLeft':
+                        handleResponse("left");
+                        break;
+                    case 'ArrowRight':
+                        handleResponse("right");
+                        break;
+                    case 'KeyG':
+
+                    }
+            };
+
+		</script>
+	</body>
+</html>
