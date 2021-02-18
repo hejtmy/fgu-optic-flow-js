@@ -1,10 +1,9 @@
-!DOCTYPE html>
 <html lang="en">
 	<head>
 		<title>three.js webgl - geometry - minecraft</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-        <link type="text/css" rel="stylesheet" href="three/exammples/main.css">
+        <link type="text/css" rel="stylesheet" href="./three/examples/main.css">
         <style>
 			#blocker {
 				position: absolute;
@@ -65,7 +64,9 @@
 
 			import Stats from './src/stats.module.js';
 
-			import { BufferGeometryUtils } from './src/BufferGeometryUtils.js';
+            import { BufferGeometryUtils } from './src/BufferGeometryUtils.js';
+            
+            import { GUI } from './src/dat.gui.module.js';
 
             class Trial{
                 constructor(start, goal1, goal2, decoy){
@@ -136,6 +137,15 @@
             let movementSpeed = 250;
             let deltaMovementSpeed;
 
+            let decoyMinimalDist = 100;
+            let decoyMaximalDist = 300;
+
+            let goal1MinimalDist = 300;
+            let goal1MaximalDist = 600;
+
+            let goal2MinimalDist = 300;
+            let goal2MaximalDist = 600;
+
 			let prevTime = performance.now();
 			const velocity = new THREE.Vector3();
 			const direction = new THREE.Vector3();
@@ -155,6 +165,7 @@
 
 			init();
 			animate();
+            createPanel();
 
 			function init() {
                 blocker = document.getElementById( 'blocker' );
@@ -402,10 +413,12 @@
                 hideBlockers();
                 const height = 50;
                 const start = new THREE.Vector3(0,height,0);
-                // TODO - this is a bias pfor positive turns
-                const decoy = new THREE.Vector3().random().clampLength(0.3,1).subScalar(0.5).multiplyScalar(500).setY(height);
-                const goal1 = new THREE.Vector3().random().multiplyScalar(750).setY(height);
-                const goal2 = new THREE.Vector3().random().multiplyScalar(750).setY(height);
+                const decoyDist = decoyMinimalDist + Math.random() * (decoyMaximalDist - decoyMinimalDist);
+                const decoy = new THREE.Vector3().random().subScalar(0.5).setY(0).normalize().multiplyScalar(decoyDist).setY(height);
+                // Allows slight turn back - BIASED
+                const goal1 = new THREE.Vector3(0, height, goal1MinimalDist + Math.random() * (goal1MaximalDist - goal1MinimalDist));
+                const goal2Dist = goal2MinimalDist + Math.random() * (goal2MaximalDist - goal2MinimalDist);
+                const goal2 = new THREE.Vector3().random().setY(0).sub(new THREE.Vector3(0.5, 0, 0.4)).normalize().multiplyScalar(goal2Dist).setY(height);
 
                 var trial = new Trial(start, goal1, goal2, decoy);
                 trial.correctAnswer();
@@ -445,6 +458,60 @@
 
                     }
             };
+
+            function createPanel() {
+
+				const panel = new GUI( { width: 310 } );
+
+				const folder1 = panel.addFolder( 'Decoy' );
+				const folder2 = panel.addFolder( 'Goal 1' );
+				const folder3 = panel.addFolder( 'Goal 2' );
+				const folder4 = panel.addFolder( 'Speed' );
+
+				let settings = {
+                    'decoy minimal distance': 100,
+                    'decoy maximal distance': 400,
+                    'goal 1 minimal distance': 300,
+                    'goal 1 maximal distance' : 600,
+                    'goal 2 minimal distance': 300,
+                    'goal 2 maximal distance' : 600,
+                    'rotation speed' : 0.5,
+                    'movement speed' : 100,
+
+                };
+                
+				folder1.add( settings, 'decoy minimal distance', 50, 400, 10).listen().onChange( function( value ) {
+                    decoyMinimalDist = value;
+                } );
+				folder1.add( settings, 'decoy maximal distance', 100, 1000, 10).listen().onChange( function( value ) {
+                    decoyMinimalDist = Math.max(value, decoyMaximalDist);
+                } );
+				folder2.add( settings, 'goal 1 minimal distance', 200, 1000, 10).listen().onChange( function( value ) {
+                    goal1MinimalDist = value;
+                } );
+				folder2.add( settings, 'goal 1 maximal distance', 200, 1000, 10).listen().onChange( function( value ) {
+                    goal1MaximalDist = Math.max(value, goal1MinimalDist);
+                } );
+				folder3.add( settings, 'goal 2 minimal distance', 200, 1000, 10).listen().onChange( function( value ) {
+                    goal2MinimalDist = value;
+                } );
+				folder3.add( settings, 'goal 2 maximal distance', 200, 1000, 10).listen().onChange( function( value ) {
+                    goal2MaximalDist = Math.max(value, goal2MinimalDist);
+                } );
+				folder4.add( settings, 'rotation speed', 0.1, 3, 0.1).listen().onChange( function( value ) {
+                    rotationSpeed = value;
+                } );
+				folder4.add( settings, 'movement speed', 100, 1000, 10).listen().onChange( function( value ) {
+                    movementSpeed = value;
+                } );
+
+
+				folder1.open();
+				folder2.open();
+				folder3.open();
+				folder4.open();
+
+			}
 
 		</script>
 	</body>
