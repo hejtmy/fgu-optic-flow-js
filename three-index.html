@@ -63,7 +63,7 @@
 		<script type="module">
 
 			import * as THREE from './src/three.module.js';
-
+            import getRandomStarField from './src/starfield.js';
 			import Stats from './src/stats.module.js';
 
             import { BufferGeometryUtils } from './src/BufferGeometryUtils.js';
@@ -123,12 +123,11 @@
                     this.cube.material.dispose();
                     scene.remove(this.cube);
                 }
-
             }
 
 			let container, stats;
 
-            let camera, controls, scene, renderer;
+            let camera, controls, scene, renderer, sky;
             
             let goal = null;
             let startingRotation, targetRotation, startingPosition, rotationTime;
@@ -150,6 +149,7 @@
 
             let goal2MinimalAngle = 10;
             let goal2MaximalAngle = 125;
+            let skyOn = true;
 
 			let prevTime = performance.now();
 			const velocity = new THREE.Vector3();
@@ -195,7 +195,15 @@
 				camera.position.y = getY( worldHalfWidth, worldHalfDepth ) * 100 + 100;
 
 				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0x000000 );
+				//scene.background = new THREE.Color( 0x000000 );
+
+                var skyBox = new THREE.BoxGeometry(30000, 30000, 30000);
+                var skyBoxMaterial = new THREE.MeshBasicMaterial({
+                    map: getRandomStarField(600, 2048, 2048),
+                    side: THREE.BackSide
+                });
+                sky = new THREE.Mesh(skyBox, skyBoxMaterial);
+                scene.add(sky);
 
 				const matrix = new THREE.Matrix4();
 
@@ -439,6 +447,7 @@
                         goal2MaximalDist:goal2MaximalDist,
                         rotationSpeed:rotationSpeed,
                         movementSpeed:movementSpeed,
+                        skyOn:skyOn,
                     },
                     positions: {
                         goal1: currentTrial.goal1.position,
@@ -533,6 +542,15 @@
                 downloadAnchorNode.remove();
             }
 
+            function toggleSky(value){
+                if(value){
+                    scene.add(sky);
+                } else {
+                    scene.remove(sky);
+                }
+                skyOn = value;
+            }
+
             function createPanel() {
 				const panel = new GUI( { width: 310 } );
 
@@ -540,6 +558,7 @@
 				const folder2 = panel.addFolder( 'Goal 1' );
 				const folder3 = panel.addFolder( 'Goal 2' );
 				const folder4 = panel.addFolder( 'Speed' );
+				const folder5 = panel.addFolder( 'Sky' );
 
 				let settings = {
                     'decoy minimal distance': 100,
@@ -552,6 +571,7 @@
                     'movement speed' : 250,
                     'goal 2 minimal angle': 15,
                     'goal 2 maximal angle': 125,
+                    'sky on': true,
                     'save data': saveToPC,
                 };
                 
@@ -585,12 +605,14 @@
 				folder4.add( settings, 'movement speed', 50, 500, 25).listen().onChange( function( value ) {
                     movementSpeed = value;
                 } );
+                folder5.add(settings, 'sky on').listen().onChange((value) => toggleSky(value))
                 panel.add(settings, 'save data')
 
 				folder1.open();
 				folder2.open();
 				folder3.open();
 				folder4.open();
+				folder5.open();
 			}
 
 		</script>
