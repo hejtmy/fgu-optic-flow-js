@@ -1,8 +1,8 @@
 var numberOfEls = 500;
-const speed = 1000;
+const speed = 10000;
 const radius = 500;
 const starSize = 10;
-let sizeVar = [5, 25];
+let sizeVar = [1, 25];
 var midScreenX = window.innerWidth / 2;
 var midScreenY = window.innerHeight / 2;
 var oldradius = Math.sqrt(midScreenX * midScreenX + midScreenY * midScreenY);
@@ -29,9 +29,10 @@ prepareStarsCircle = function(number, color = 'white', size = 10){
     return elements;
 }
 
-prepareStarsRect = function(number, color = 'white', size = [2,10]){
-    let elements = [];
+prepareStarsRect = function(number, color = 'white', size = [1,10]){
+    let starObjects = [];
     for (var i = 0; i < numberOfEls; i++) {
+        star = {};
         var el = document.createElement('div');
         el.classList.add('particle', 'star');
         el.style.backgroundColor = color;
@@ -42,16 +43,17 @@ prepareStarsRect = function(number, color = 'white', size = [2,10]){
         y = Math.random()*window.innerHeight
         el.style.left = x;
         el.style.bottom = y;
-        elements.push(el);
-        stars.appendChild(el);
+        star.element = el;
+        starObjects.push(star);
+        stars.appendChild(star.element);
     }
-    return elements;
+    return starObjects;
 }
 
-randomMovement = function(elements){
-    for(var i = 0; i < elements.length; i++){
+randomMovement = function(starObjects){
+    for(var i = 0; i < starObjects.length; i++){
         anime({
-            targets: elements[i],
+            targets: starObjects[i].element,
             translateX: Math.random()*100,
             translateY: Math.random()*100,
             duration: speed,
@@ -61,17 +63,48 @@ randomMovement = function(elements){
     }
 }
 
-horizontalMovement = function(elements, direction = "left"){
+horizontalMovement = function(starObjects, direction = "left"){
     let transX = direction == "left" ? -100 : 100;
-    for(var i = 0; i < elements.length; i++){
+    for(var i = 0; i < starObjects.length; i++){
         anime({
-            targets: elements[i],
+            targets: starObjects[i].element,
             translateX: transX,
             duration: speed,
             easing: 'linear',
             loop: true
         });
     }
+}
+
+radialMovement = function(starObjects, direction = "in"){
+    const center = [window.innerWidth / 2, window.innerHeight / 2];
+    for(var i = 0; i < starObjects.length; i++){
+        let target = starObjects[i].element;
+        let position = getStarPosition(starObjects[i]);
+        let transx = center[0] - position[0];
+        let transy = center[1] - position[1];
+        anime({
+            targets: target,
+            translateX: transx,
+            translateY: transy,
+            duration: speed,
+            easing: 'linear',
+            loop: true
+        });
+    }
+}
+
+getStarPosition = function(starObject){
+    let out = getOffset(starObject.element);
+    return [out.left, out.top];
+}
+
+getOffset = function(el) {
+  const rect = el.getBoundingClientRect();
+  return {
+    left: rect.left + window.scrollX,
+    top: rect.top + window.scrollY
+  };
 }
 
 createCircle = function(x, y, radius, fill = "#646464"){
@@ -137,7 +170,8 @@ createBackground = function(x, y, radius, fill = '#646464'){
     return svgContainer;
 }
 
-let elements = prepareStarsRect();
+let starObjects = prepareStarsRect();
 //randomMovement(elements);
 
-horizontalMovement(elements, "right");
+//horizontalMovement(starObjects, "right");
+radialMovement(starObjects)
