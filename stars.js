@@ -1,36 +1,46 @@
+const FlowDirection = Object.freeze({
+    "radialin":0,
+    "radialout":1,
+    "horizontalleft":2,
+    "horizontalright":3,
+    "random":4
+})
+
+let OpticFlowSettings = {
+    CurrentFlowDirection: FlowDirection.radialin,
+}
+
 //based on an Example by @curran
 window.requestAnimFrame = (function(){return  window.requestAnimationFrame})();
 var canvas = document.getElementById("space");
 var c = canvas.getContext("2d");
 
 var numStars = 300;
-var radius = '0.'+ Math.floor(Math.random() * 9) + 1;
-var focalLength = canvas.width *2;
-var warp = 0;
+let radius = '0.'+ Math.floor(Math.random() * 9) + 1;
+let focalLength = canvas.width *2;
+let warp = 0;
 var centerX, centerY;
 var speed = 5000;
 var starSize = 5;
 
-var random = false;
-
-var stars = [], star;
+let stars = [], star;
 var i;
 
 var animate = true;
 
 const arduinoController = new ArduinoController();
 
-initializeStars();
+stars = initializeStars();
 
 function executeFrame(){
     if(!animate) return;
     requestAnimFrame(executeFrame);
-    moveStars();
-    drawStars();
+    moveStars(stars);
+    drawStars(stars);
 }
 
 function initializeStars(){
-    arduinoController.blink();
+  arduinoController.blink();
 
   centerX = canvas.width / 2;
   centerY = canvas.height / 2;
@@ -47,26 +57,44 @@ function initializeStars(){
     };
     stars.push(star);
   }
+  return stars;
 }
 
-function moveStars(){
-    if(random){
-        for(i = 0; i < numStars; i++){
-            star = stars[i];
-            star.x += star.dir_x;
-            star.y += star.dir_y;
-        }
-    } else {
-        for(i = 0; i < numStars; i++){
-            star = stars[i];
-            star.z--;
+function moveStars(stars){
+    switch(OpticFlowSettings.CurrentFlowDirection){
+        case FlowDirection.radialin:
+            stars = moveRadial(stars);
+        case FlowDirection.random:
+            stars = moveRandom(stars);
+        case FlowDirection.horizontalright:
+            stars = moveHorizontal(stars);
+    }
+}
 
-            if(star.z <= 0){
+function moveRandom(stars){
+    for(i = 0; i < stars.length; i++){
+        star = stars[i];
+        star.x += star.dir_x;
+        star.y += star.dir_y;
+    }
+    return stars;
+}
+
+function moveHorizontal(stars){
+
+}
+
+function moveRadial(stars){
+    for(i = 0; i < stars.length; i++){
+        star = stars[i];
+        star.z--;
+        if(star.z <= 0){
             star.z = canvas.width;
-            }
         }
-        }
+    }
+    return stars;
 }
+
 
 function drawCentralCross(context, canvas, thickness = 5, length = 40){
     // vertical
@@ -92,29 +120,44 @@ function drawStars(){
       c.fillRect(0, 0, canvas.width, canvas.height);
     }
     c.fillStyle = "rgba(209, 255, 255, " + radius + ")";
-    if(random){
-        for(i = 0; i < numStars; i++){
-            star = stars[i];
-            pixelX = star.x;
-            pixelY = star.y
-            pixelRadius = starSize;
-            c.fillRect(pixelX, pixelY, pixelRadius, pixelRadius);
-            c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
-        }
-    } else {
-        for(i = 0; i < numStars; i++){
-            star = stars[i];
-            pixelX = (star.x - centerX) * (focalLength / star.z);
-            pixelX += centerX;
-            pixelY = (star.y - centerY) * (focalLength / star.z);
-            pixelY += centerY;
-            pixelRadius = starSize * (focalLength / star.z);
-            c.fillRect(pixelX, pixelY, pixelRadius, pixelRadius);
-            c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
-        }
+    switch(OpticFlowSettings.CurrentFlowDirection){
+        case FlowDirection.random:
+            drawRandom(stars);
+        case FlowDirection.radialin:
+            drawRadial(stars);
     }
     drawCentralCross(c, canvas);
 }
+
+function drawRadial(stars){
+    for(i = 0; i < numStars; i++){
+        star = stars[i];
+        pixelX = (star.x - centerX) * (focalLength / star.z);
+        pixelX += centerX;
+        pixelY = (star.y - centerY) * (focalLength / star.z);
+        pixelY += centerY;
+        pixelRadius = starSize * (focalLength / star.z);
+        c.fillRect(pixelX, pixelY, pixelRadius, pixelRadius);
+        c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
+    }
+}
+
+function drawHorizontal(){
+
+}
+
+function drawRandom(stars){
+    for(i = 0; i < numStars; i++){
+        star = stars[i];
+        pixelX = star.x;
+        pixelY = star.y
+        pixelRadius = starSize;
+        c.fillRect(pixelX, pixelY, pixelRadius, pixelRadius);
+        c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
+    }
+}
+
+// BUTTONS -------------------
 
 document.getElementById('trace').addEventListener("click", function(e){
     window.warp = window.warp==1 ? 0 : 1;
@@ -123,7 +166,7 @@ document.getElementById('trace').addEventListener("click", function(e){
 });
 
 document.getElementById('random').addEventListener("click", function(e){
-    window.random = window.random ? false : true;
+    OpticFlowSettings.CurrentFlowDirection = OpticFlowSettings.CurrentFlowDirection == FlowDirection.random ? FlowDirection.radialin : FlowDirection.random;
     initializeStars();
     window.c.clearRect(0, 0, window.canvas.width, window.canvas.height);
 });
@@ -132,4 +175,6 @@ document.getElementById('arduino-connect-btn').addEventListener("click", functio
    arduinoController.connect();
 })
 
+// EXECUTE ----------------------
+//execute frame loops on itself
 executeFrame();
