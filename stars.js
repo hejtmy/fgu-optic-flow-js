@@ -15,15 +15,17 @@ window.requestAnimFrame = (function(){return  window.requestAnimationFrame})();
 var canvas = document.getElementById("space");
 var c = canvas.getContext("2d");
 
+var ZAxis = 2000;
+
 var numStars = 300;
-let radius = '0.'+ Math.floor(Math.random() * 9) + 1;
-let focalLength = canvas.width *2;
-let warp = 0;
+var radius = '0.'+ Math.floor(Math.random() * 9) + 1;
+var focalLength = canvas.width * 2;
+var warp = 0;
 var centerX, centerY;
 var speed = 5000;
 var starSize = 5;
 
-let stars = [], star;
+var stars = [], star;
 var i;
 
 var animate = true;
@@ -50,7 +52,7 @@ function initializeStars(){
     star = {
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      z: Math.random() * canvas.width,
+      z: Math.random() * ZAxis,
       o: '0.'+ Math.floor(Math.random() * 99) + 1,
       dir_x: (Math.random() * canvas.width - canvas.width/2)/speed,
       dir_y: (Math.random() * canvas.height - canvas.height/2)/speed,
@@ -63,11 +65,16 @@ function initializeStars(){
 function moveStars(stars){
     switch(OpticFlowSettings.CurrentFlowDirection){
         case FlowDirection.radialin:
-            stars = moveRadial(stars);
+        case FlowDirection.radialout:
+            stars = moveRadial(stars, OpticFlowSettings.CurrentFlowDirection);
+            break;
         case FlowDirection.random:
             stars = moveRandom(stars);
+            break;
         case FlowDirection.horizontalright:
-            stars = moveHorizontal(stars);
+        case FlowDirection.horizontalleft:
+            stars = moveHorizontal(stars, OpticFlowSettings.CurrentFlowDirection);
+            break;
     }
 }
 
@@ -80,16 +87,20 @@ function moveRandom(stars){
     return stars;
 }
 
-function moveHorizontal(stars){
-
-}
-
-function moveRadial(stars){
+function moveHorizontal(stars, direction){
     for(i = 0; i < stars.length; i++){
         star = stars[i];
-        star.z--;
-        if(star.z <= 0){
-            star.z = canvas.width;
+        star.x += (((direction == FlowDirection.horizontalleft)*2)-1) * Math.abs(star.dir_x);
+    }
+    return stars;
+}
+
+function moveRadial(stars, direction){
+    for(i = 0; i < stars.length; i++){
+        star = stars[i];
+        star.z += (direction == FlowDirection.radialin)*2-1;
+        if(star.z <= 0 || star.z >= ZAxis){
+            star.z = 0;
         }
     }
     return stars;
@@ -123,8 +134,16 @@ function drawStars(){
     switch(OpticFlowSettings.CurrentFlowDirection){
         case FlowDirection.random:
             drawRandom(stars);
+            break;
         case FlowDirection.radialin:
+        case FlowDirection.radialout:
             drawRadial(stars);
+            break;
+        case FlowDirection.horizontalleft:
+        case FlowDirection.horizontalright:
+            drawRandom(stars);
+            break;
+
     }
     drawCentralCross(c, canvas);
 }
@@ -166,8 +185,8 @@ document.getElementById('trace').addEventListener("click", function(e){
 });
 
 document.getElementById('random').addEventListener("click", function(e){
-    OpticFlowSettings.CurrentFlowDirection = OpticFlowSettings.CurrentFlowDirection == FlowDirection.random ? FlowDirection.radialin : FlowDirection.random;
-    initializeStars();
+    OpticFlowSettings.CurrentFlowDirection += 1;
+    if(OpticFlowSettings.CurrentFlowDirection > 4) OpticFlowSettings.CurrentFlowDirection = 0;
     window.c.clearRect(0, 0, window.canvas.width, window.canvas.height);
 });
 
