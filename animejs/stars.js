@@ -85,11 +85,16 @@ radialMovement = function(starObjects, direction = "in"){
         let transy = center[1] - position[1];
         anime({
             targets: target,
+            width: "1px",
+            height: "1px",
             translateX: transx,
             translateY: transy,
             duration: speed,
             easing: 'linear',
-            loop: true
+            loop: true,
+            update: function(anim){
+                console.log(anim.target);
+            }
         });
     }
 }
