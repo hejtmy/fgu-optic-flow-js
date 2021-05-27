@@ -17,15 +17,15 @@ var c = canvas.getContext("2d");
 
 var depth = 2000;
 
-var numStars = 300;
+var numStars = 500;
 var radius = '0.'+ Math.floor(Math.random() * 9) + 1;
 var focalLength = canvas.width * 2;
 var warp = 0;
 var centerX, centerY;
-var speed=  5;
+var speed = 5;
 var horizontalSpeed = 1;
-var depthSpeed = 5;
-var starSize = 5;
+var depthSpeed = 10;
+var starSize = 10;
 
 var stars = [], star;
 var i;
@@ -54,10 +54,10 @@ function initializeStars(){
     star = {
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      z: Math.random() * depth,
+      z: (Math.random()*0.5+0.5) * depth,
       o: '0.'+ Math.floor(Math.random() * 99) + 1,
-      dir_x: (Math.random() + 0.1) * horizontalSpeed,
-      dir_y: (Math.random() + 0.1) * horizontalSpeed
+      dir_x: (Math.random()*0.9 + 0.1)*((Math.random() > 0.5)*2-1), 
+      dir_y: (Math.random()*0.9 + 0.1)*((Math.random() > 0.5)*2-1)
     };
     stars.push(star);
   }
@@ -83,8 +83,8 @@ function moveStars(stars){
 function moveRandom(stars){
     for(i = 0; i < stars.length; i++){
         star = stars[i];
-        star.x += star.dir_x;
-        star.y += star.dir_y;
+        star.x += star.dir_x * horizontalSpeed;
+        star.y += star.dir_y * horizontalSpeed;
         star = keepStarInCanvas(star);
         stars[i] = star;
     }
@@ -110,16 +110,25 @@ function keepStarInCanvas(star){
 
 function moveRadial(stars, direction){
     for(i = 0; i < stars.length; i++){
+        var sign = ((direction == FlowDirection.radialin)*2-1);
         var star = stars[i];
-        star.z = ((direction == FlowDirection.radialin)*2-1) * speed;
-        if(star.z <= 0 || star.z >= depth){
-            star.z = 0;
+        star.z += sign * depthSpeed;
+        star.x -= sign * (star.x - centerX)*(depthSpeed/depth);
+        star.y -= sign * (star.y - centerY)*(depthSpeed/depth);
+        if(star.z > depth || star.z < 0 || star.y < 0 || star.x < 0 || star.y > canvas.height || star.x > canvas.width){
+            resetStar(star);
         }
         stars[i] = star;
     }
     return stars;
 }
 
+function resetStar(star){
+    star.z = (Math.random()) * depth,
+    star.x = Math.random() * canvas.width;
+    star.y = Math.random() * canvas.height
+    return(star)
+}
 
 function drawCentralCross(context, canvas, thickness = 5, length = 40){
     // vertical
@@ -144,14 +153,15 @@ function drawStars(){
         c.fillStyle = "rgba(0,10,20,1)";
         c.fillRect(0, 0, canvas.width, canvas.height);
     }
-    c.fillStyle = "rgba(209, 255, 255, " + radius + ")";
+    //c.fillStyle = "rgba(209, 255, 255, " + radius + ")";
     switch(OpticFlowSettings.CurrentFlowDirection){
         case FlowDirection.random:
             drawStars2(stars);
             break;
         case FlowDirection.radialin:
         case FlowDirection.radialout:
-            drawRadial(stars);
+            drawStars2(stars);
+            //drawRadial(stars);
             break;
         case FlowDirection.horizontalleft:
         case FlowDirection.horizontalright:
@@ -160,19 +170,6 @@ function drawStars(){
 
     }
     drawCentralCross(c, canvas);
-}
-
-function drawRadial(stars){
-    for(i = 0; i < numStars; i++){
-        star = stars[i];
-        pixelX = (star.x - centerX) * (focalLength / star.z);
-        pixelX += centerX;
-        pixelY = (star.y - centerY) * (focalLength / star.z);
-        pixelY += centerY;
-        pixelRadius = starSize * (focalLength / star.z);
-        c.fillRect(pixelX, pixelY, pixelRadius, pixelRadius);
-        c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
-    }
 }
 
 function drawStars2(stars){
