@@ -10,6 +10,11 @@ let OpticFlowSettings = {
     CurrentFlowDirection: FlowDirection.radialin,
 }
 
+const centralArea = {
+    width:150,
+    height:150
+}
+
 //based on an Example by @curran
 window.requestAnimFrame = (function(){return  window.requestAnimationFrame})();
 var canvas = document.getElementById("space");
@@ -17,7 +22,7 @@ var c = canvas.getContext("2d");
 
 var depth = 2000;
 
-var numStars = 500;
+var numStars = 400;
 var radius = '0.'+ Math.floor(Math.random() * 9) + 1;
 var focalLength = canvas.width * 2;
 var warp = 0;
@@ -30,6 +35,7 @@ var starSize = 10;
 var stars = [], star;
 var i;
 
+var lastTime;
 var animate = true;
 
 const arduinoController = new ArduinoController();
@@ -39,6 +45,7 @@ stars = initializeStars();
 function executeFrame(){
     if(!animate) return;
     requestAnimFrame(executeFrame);
+ 
     moveStars(stars);
     drawStars(stars);
 }
@@ -116,15 +123,19 @@ function moveRadial(stars, direction){
         star.x -= sign * (star.x - centerX)*(depthSpeed/depth);
         star.y -= sign * (star.y - centerY)*(depthSpeed/depth);
         if(star.z > depth || star.z < 0 || star.y < 0 || star.x < 0 || star.y > canvas.height || star.x > canvas.width){
-            resetStar(star);
+            if(sign > 0) { 
+                resetStar(star, 0, 0.9);
+            } else {
+                resetStar(star, 1.0, 0.0);
+            }
         }
         stars[i] = star;
     }
     return stars;
 }
 
-function resetStar(star){
-    star.z = (Math.random()) * depth,
+function resetStar(star, zmin, zmax){
+    star.z = (Math.random()*(zmax-zmin) + zmin) * depth,
     star.x = Math.random() * canvas.width;
     star.y = Math.random() * canvas.height
     return(star)
@@ -132,6 +143,8 @@ function resetStar(star){
 
 function drawCentralCross(context, canvas, thickness = 5, length = 40){
     // vertical
+    context.fillStyle = "#000000";
+    context.fillRect(canvas.width/2 - centralArea.width/2, canvas.height/2 - centralArea.height/2, centralArea.width, centralArea.height);
     context.fillStyle = "#FF0000";
     context.fillRect(canvas.width/2 - length/2, canvas.height/2 - thickness/2, length, thickness);
     // horizontal
