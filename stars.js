@@ -22,20 +22,20 @@ var c = canvas.getContext("2d");
 
 var depth = 2000;
 
-var numStars = 400;
+var numStars = 500;
 var radius = '0.'+ Math.floor(Math.random() * 9) + 1;
 var focalLength = canvas.width * 2;
 var warp = 0;
 var centerX, centerY;
 var speed = 5;
-var horizontalSpeed = 1;
-var depthSpeed = 10;
+var horizontalSpeed = 0.3;
+var depthSpeed = 1;
 var starSize = 10;
 
 var stars = [], star;
 var i;
 
-var lastTime;
+var lastTime, deltaTime;
 var animate = true;
 
 const arduinoController = new ArduinoController();
@@ -45,7 +45,9 @@ stars = initializeStars();
 function executeFrame(){
     if(!animate) return;
     requestAnimFrame(executeFrame);
- 
+    var t = Date.now();
+    deltaTime = t-lastTime;
+    lastTime = t;
     moveStars(stars);
     drawStars(stars);
 }
@@ -90,8 +92,8 @@ function moveStars(stars){
 function moveRandom(stars){
     for(i = 0; i < stars.length; i++){
         star = stars[i];
-        star.x += star.dir_x * horizontalSpeed;
-        star.y += star.dir_y * horizontalSpeed;
+        star.x += star.dir_x * horizontalSpeed*deltaTime;
+        star.y += star.dir_y * horizontalSpeed*deltaTime;
         star = keepStarInCanvas(star);
         stars[i] = star;
     }
@@ -101,7 +103,7 @@ function moveRandom(stars){
 function moveHorizontal(stars, direction){
     for(i = 0; i < stars.length; i++){
         var star = stars[i];
-        star.x += (((direction == FlowDirection.horizontalleft)*2)-1) * Math.abs(star.dir_x);
+        star.x += (((direction == FlowDirection.horizontalleft)*2)-1) * Math.abs(star.dir_x) * horizontalSpeed * deltaTime;
         stars[i] = keepStarInCanvas(star);
     }
     return stars;
@@ -119,9 +121,9 @@ function moveRadial(stars, direction){
     for(i = 0; i < stars.length; i++){
         var sign = ((direction == FlowDirection.radialin)*2-1);
         var star = stars[i];
-        star.z += sign * depthSpeed;
-        star.x -= sign * (star.x - centerX)*(depthSpeed/depth);
-        star.y -= sign * (star.y - centerY)*(depthSpeed/depth);
+        star.z += sign * depthSpeed*deltaTime;
+        star.x -= sign * (star.x - centerX)*(depthSpeed/depth)*deltaTime;
+        star.y -= sign * (star.y - centerY)*(depthSpeed/depth)*deltaTime;
         if(star.z > depth || star.z < 0 || star.y < 0 || star.x < 0 || star.y > canvas.height || star.x > canvas.width){
             if(sign > 0) { 
                 resetStar(star, 0, 0.9);
