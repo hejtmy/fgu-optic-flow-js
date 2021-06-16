@@ -1,30 +1,4 @@
 //DEFINITIONS ----
-
-//const Stars = function(){
-
-var canvas = document.getElementById("space");
-var c = canvas.getContext("2d");
-
-var depth = 2000;
-
-var numStars = 500;
-var radius = '0.'+ Math.floor(Math.random() * 9) + 1;
-var focalLength = canvas.width * 2;
-var warp = 0;
-var centerX, centerY;
-var speed = 5;
-var horizontalSpeed = 0.3;
-var depthSpeed = 1;
-var starSize = 10;
-
-var stars = [], star;
-var i;
-
-var lastTime, deltaTime;
-var animate = true;
-
-const arduinoController = new ArduinoController();
-
 const FlowDirection = Object.freeze({
     "radialin":0,
     "radialout":1,
@@ -33,45 +7,85 @@ const FlowDirection = Object.freeze({
     "random":4
 })
 
-let OpticFlowSettings = {
-    CurrentFlowDirection: FlowDirection.radialin,
-}
+const StarsController = {
 
-const centralArea = {
+canvas: null,
+c: null,
+depth: 2000,
+numStars: 500,
+radius: '0.'+ Math.floor(Math.random() * 9) + 1,
+focalLength: null,
+warp: 0,
+centerX:null,
+centerY:null,
+speed: 5,
+horizontalSpeed: 0.3,
+depthSpeed: 1,
+starSize: 10,
+stars: [], 
+lastTime:null,
+deltaTime: null,
+animate: true,
+window:null,
+
+arduinoController: new ArduinoController(),
+
+OpticFlowSettings: {
+    CurrentFlowDirection: FlowDirection.radialin,
+},
+
+centralArea: {
     width:150,
     height:150
-}
-
-window.requestAnimFrame = (() => {
-    return window.requestAnimationFrame
-})();
+},
 
 // EXECUTION -----
-stars = initializeStars();
 
-function executeFrame(){
-    if(!animate) return;
-    requestAnimFrame(executeFrame);
+initialize: function(canvas){
+    this.canvas = canvas;
+    this.c = canvas.getContext('2d');
+    this.focalLength = canvas.width * 2;
+    this.stars = this.initializeStars();
+    this.window = window;
+},
+
+start: function(window){
+    this.executeFrame();
+    //this.executeFrame();
+},
+
+stop : function(){
+
+},
+
+requestAnimasdaFrame: function(){
+    return this.window.requestAnimationFrame;
+},
+
+executeFrame: function(){
+    if(!this.animate) return;
     var t = Date.now();
-    deltaTime = t-lastTime;
-    lastTime = t;
-    moveStars(stars);
-    drawStars(stars);
-}
+    this.deltaTime = t - this.lastTime;
+    this.lastTime = t;
+    this.moveStars(this.stars);
+    this.drawStars(this.stars);
+    //https://stackoverflow.com/questions/19459449/running-requestanimationframe-from-within-a-new-object
+    this.window.requestAnimationFrame(this.executeFrame.bind(this));
+},
 
-function initializeStars(){
-  arduinoController.blink();
+initializeStars: function(){
+    this.arduinoController.blink();
 
-  centerX = canvas.width / 2;
-  centerY = canvas.height / 2;
-  
-  stars = [];
-    for(i = 0; i < numStars; i++){
+    this.centerX = this.canvas.width / 2;
+    this.centerY = this.canvas.height / 2;
+    
+    let stars = [];
+    for(var i = 0; i < this.numStars; i++){
         var directionAngle = Math.random()*2*Math.PI;
-        star = {
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            z: (Math.random()*0.5+0.5) * depth,
+        var star = {
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            z: (Math.random()*0.5+0.5) * this.depth,
             o: 20, //'0.'+ Math.floor(Math.random() * 99) + 1,
             dir_x: Math.sin(directionAngle),
             dir_y: Math.cos(directionAngle),
@@ -80,82 +94,82 @@ function initializeStars(){
     stars.push(star);
   }
   return stars;
-}
+},
 
-function moveStars(stars){
-    switch(OpticFlowSettings.CurrentFlowDirection){
+moveStars: function(stars){
+    switch(this.OpticFlowSettings.CurrentFlowDirection){
         case FlowDirection.radialin:
         case FlowDirection.radialout:
-            stars = moveRadial(stars, OpticFlowSettings.CurrentFlowDirection);
+            this.stars = this.moveRadial(stars, this.OpticFlowSettings.CurrentFlowDirection);
             break;
         case FlowDirection.random:
-            stars = moveRandom(stars);
+            this.stars = this.moveRandom(stars);
             break;
         case FlowDirection.horizontalright:
         case FlowDirection.horizontalleft:
-            stars = moveHorizontal(stars, OpticFlowSettings.CurrentFlowDirection);
+            this.stars = this.moveHorizontal(stars, this.OpticFlowSettings.CurrentFlowDirection);
             break;
     }
-}
+},
 
-function moveRandom(stars){
-    for(i = 0; i < stars.length; i++){
-        star = stars[i];
-        star.x += star.dir_x * horizontalSpeed * deltaTime * (1-(star.z/depth));
-        star.y += star.dir_y * horizontalSpeed * deltaTime * (1-(star.z/depth));
-        star.z += star.dir_z * depthSpeed * deltaTime;
-        star = keepStarInCanvas(star);
+moveRandom: function(stars){
+    for(var i = 0; i < stars.length; i++){
+        var star = stars[i];
+        star.x += star.dir_x * this.horizontalSpeed * this.deltaTime * (1-(star.z/this.depth));
+        star.y += star.dir_y * this.horizontalSpeed * this.deltaTime * (1-(star.z/this.depth));
+        star.z += star.dir_z * this.depthSpeed * this.deltaTime;
+        star = this.keepStarInCanvas(star);
         stars[i] = star;
     }
     return stars;
-}
+},
 
-function moveHorizontal(stars, direction){
-    for(i = 0; i < stars.length; i++){
+moveHorizontal: function(stars, direction){
+    for(var i = 0; i < stars.length; i++){
         var star = stars[i];
-        star.x += (((direction == FlowDirection.horizontalleft)*2)-1) * (1-(star.z/depth)) * horizontalSpeed * deltaTime;
-        stars[i] = keepStarInCanvas(star);
+        star.x += (((direction == FlowDirection.horizontalleft)*2)-1) * (1-(star.z/this.depth)) * this.horizontalSpeed * this.deltaTime;
+        stars[i] = this.keepStarInCanvas(star);
     }
     return stars;
-}
+},
 
-function keepStarInCanvas(star){
-    if(star.x < 0){star.x = canvas.width;}
-    if(star.x > canvas.width){star.x = 0;}
-    if(star.y < 0){star.y = canvas.height;}
-    if(star.y > canvas.height){star.y = 0;}
-    if(star.z > depth){resetStar(star, 0, 0.8);}
-    if(star.z < 0){resetStar(star, 0.2, 1.0);}
+keepStarInCanvas: function(star){
+    if(star.x < 0){star.x = this.canvas.width;}
+    if(star.x > this.canvas.width){star.x = 0;}
+    if(star.y < 0){star.y = this.canvas.height;}
+    if(star.y > this.canvas.height){star.y = 0;}
+    if(star.z > this.depth) this.resetStar(star, 0, 0.8, this.canvas);
+    if(star.z < 0) this.resetStar(star, 0.2, 1.0, this.canvas);
     return star;
-}
+},
 
-function moveRadial(stars, direction){
-    for(i = 0; i < stars.length; i++){
-        var sign = ((direction == FlowDirection.radialin)*2-1);
+moveRadial: function(stars, direction){
+    for(var i = 0; i < stars.length; i++){
+        var sign = ((direction == FlowDirection.radialin)*2 - 1);
         var star = stars[i];
-        star.z += sign * depthSpeed*deltaTime;
-        star.x -= sign * (star.x - centerX)*(depthSpeed/depth)*deltaTime;
-        star.y -= sign * (star.y - centerY)*(depthSpeed/depth)*deltaTime;
-        if(star.z > depth || star.z < 0 || star.y < 0 || star.x < 0 || star.y > canvas.height || star.x > canvas.width){
+        star.z += sign * this.depthSpeed*this.deltaTime;
+        star.x -= sign * (star.x - this.centerX)*(this.depthSpeed/this.depth)*this.deltaTime;
+        star.y -= sign * (star.y - this.centerY)*(this.depthSpeed/this.depth)*this.deltaTime;
+        if(star.z > this.depth || star.z < 0 || star.y < 0 || star.x < 0 || star.y > this.canvas.height || star.x > this.canvas.width){
             if(sign > 0) { 
-                resetStar(star, 0, 0.8);
+                this.resetStar(star, 0, 0.8, this.canvas);
             } else {
-                resetStar(star, 0.2, 1.0);
+                this.resetStar(star, 0.2, 1.0, this.canvas);
             }
         }
         stars[i] = star;
     }
     return stars;
-}
+},
 
-function resetStar(star, zmin, zmax){
-    star.z = (Math.random()*(zmax-zmin) + zmin) * depth,
+resetStar: function(star, zmin, zmax, canvas){
+    star.z = (Math.random()*(zmax-zmin) + zmin) * this.depth,
     star.x = Math.random() * canvas.width;
     star.y = Math.random() * canvas.height
     return(star)
-}
+},
 
-function drawCentralCross(context, canvas, thickness = 5, length = 40){
+drawCentralCross: function(context, canvas, centralArea, thickness = 5, length = 40){
     // vertical
     context.fillStyle = "#000000";
     context.fillRect(canvas.width/2 - centralArea.width/2, canvas.height/2 - centralArea.height/2, centralArea.width, centralArea.height);
@@ -164,37 +178,38 @@ function drawCentralCross(context, canvas, thickness = 5, length = 40){
     // horizontal
     context.fillStyle = "#FF0000";
     context.fillRect(canvas.width/2-thickness/2, canvas.height/2 - (length/2), thickness, length);
-}
+},
 
-function drawStars(){
-  var pixelX, pixelY, pixelRadius;
-  
+drawStars: function(){
     //TODO - change to ONwindowsResuze
     // Resize to the screen - change to ON 
-    if(canvas.width != window.innerWidth || canvas.width != window.innerWidth){
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initializeStars();
+    if(this.canvas.width != window.innerWidth || this.canvas.width != window.innerWidth){
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+      this.initializeStars();
     }
-    if(warp == 0){
-        c.fillStyle = "rgba(0,10,20,1)";
-        c.fillRect(0, 0, canvas.width, canvas.height);
+    if(this.warp == 0){
+        this.c.fillStyle = "rgba(0,10,20,1)";
+        this.c.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
     //c.fillStyle = "rgba(209, 255, 255, " + radius + ")";
-    drawStars2(stars);
-    drawCentralCross(c, canvas);
-}
+    this.drawStars2(this.stars);
+    this.drawCentralCross(this.c, this.canvas, this.centralArea);
+},
 
-function drawStars2(stars){
-    for(i = 0; i < stars.length; i++){
+drawStars2: function(stars){
+    for(var i = 0; i < stars.length; i++){
         var star = stars[i];
-        var pixelRadius = starSize * ((depth - star.z) / depth);
-        c.fillRect(star.x, star.y, pixelRadius, pixelRadius);
-        c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
+        var pixelRadius = this.starSize * ((this.depth - star.z) / this.depth);
+        this.c.fillRect(star.x, star.y, pixelRadius, pixelRadius);
+        this.c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
     }
 }
-//}
+}
+
 
 // EXECUTE ----------------------
 //execute frame loops on itself
-executeFrame();
+//executeFrame();
+
+export {FlowDirection, StarsController};
