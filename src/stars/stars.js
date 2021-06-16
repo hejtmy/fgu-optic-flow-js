@@ -1,22 +1,7 @@
-const FlowDirection = Object.freeze({
-    "radialin":0,
-    "radialout":1,
-    "horizontalleft":2,
-    "horizontalright":3,
-    "random":4
-})
+//DEFINITIONS ----
 
-let OpticFlowSettings = {
-    CurrentFlowDirection: FlowDirection.radialin,
-}
+//const Stars = function(){
 
-const centralArea = {
-    width:150,
-    height:150
-}
-
-//based on an Example by @curran
-window.requestAnimFrame = (function(){return  window.requestAnimationFrame})();
 var canvas = document.getElementById("space");
 var c = canvas.getContext("2d");
 
@@ -40,6 +25,28 @@ var animate = true;
 
 const arduinoController = new ArduinoController();
 
+const FlowDirection = Object.freeze({
+    "radialin":0,
+    "radialout":1,
+    "horizontalleft":2,
+    "horizontalright":3,
+    "random":4
+})
+
+let OpticFlowSettings = {
+    CurrentFlowDirection: FlowDirection.radialin,
+}
+
+const centralArea = {
+    width:150,
+    height:150
+}
+
+window.requestAnimFrame = (() => {
+    return window.requestAnimationFrame
+})();
+
+// EXECUTION -----
 stars = initializeStars();
 
 function executeFrame(){
@@ -65,7 +72,7 @@ function initializeStars(){
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
             z: (Math.random()*0.5+0.5) * depth,
-            o: '0.'+ Math.floor(Math.random() * 99) + 1,
+            o: 20, //'0.'+ Math.floor(Math.random() * 99) + 1,
             dir_x: Math.sin(directionAngle),
             dir_y: Math.cos(directionAngle),
             dir_z: (Math.random() * 2) - 1,
@@ -186,27 +193,7 @@ function drawStars2(stars){
         c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
     }
 }
-
-function drawHorizontal(){
-
-}
-// BUTTONS -------------------
-
-document.getElementById('trace').addEventListener("click", function(e){
-    window.warp = window.warp == 1 ? 0 : 1;
-    initializeStars();
-    window.c.clearRect(0, 0, window.canvas.width, window.canvas.height);
-});
-
-document.getElementById('random').addEventListener("click", function(e){
-    OpticFlowSettings.CurrentFlowDirection += 1;
-    if(OpticFlowSettings.CurrentFlowDirection > 4) OpticFlowSettings.CurrentFlowDirection = 0;
-    window.c.clearRect(0, 0, window.canvas.width, window.canvas.height);
-});
-
-document.getElementById('arduino-connect-btn').addEventListener("click", function(e){
-   arduinoController.connect();
-})
+//}
 
 // EXECUTE ----------------------
 //execute frame loops on itself

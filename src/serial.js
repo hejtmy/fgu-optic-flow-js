@@ -53,7 +53,6 @@ class ArduinoController {
         if(!this.connected) return;
         this.serialController.write("PULSE-!");
     }
-
 }
 
 class SerialController {

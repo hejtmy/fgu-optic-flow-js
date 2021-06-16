@@ -1,4 +1,5 @@
 import * as THREE from './three.module.js';
+
 var getRandomStarField = function(numberOfStars, width, height){
     var canvas = document.createElement('CANVAS');
 
