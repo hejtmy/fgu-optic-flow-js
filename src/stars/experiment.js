@@ -1,4 +1,5 @@
 import { StarsController, FlowDirection } from "./stars.js";
+import Logger from "./logger.js";
 
 const TrialSettings = {
     duration: 1000,
@@ -20,11 +21,14 @@ const OpticFlowExperiment = {
     currentTrial: null,
     trialTimeout: null,
     running: false,
+    logger: null,
     
     init: function(settingsObj, canvas){
         this.settings = this.parseSettings(settingsObj);
         this.starsControler = Object.create(StarsController);
         this.starsControler.initialize(canvas);
+        this.logger = Object.create(Logger);
+        this.logger.init(window);
     },
 
     parseSettings: function(settings){
@@ -43,6 +47,7 @@ const OpticFlowExperiment = {
         this.starsControler.start();
         this.running = true;
         this.nextTrial();
+        this.logger.logMessage("experimentStarted");
     },
 
     pause: function(){
@@ -52,6 +57,7 @@ const OpticFlowExperiment = {
     finishExperiment: function(){
         this.running = false;
         this.starsControler.stop();
+        this.logger.logMessage("experimentFinished");
     },
 
     nextTrial: function(){
@@ -65,20 +71,18 @@ const OpticFlowExperiment = {
         console.log(this.currentTrial.movementType);
         //setup stars copntroller
         this.starsControler.setFlowDirection(this.currentTrial.movementType);
+        this.logger.logMessage(`trialStarted;${this.iTrial}`);
         // add timeout
         this.trialTimeout = setTimeout(this.finishTrial.bind(this), this.currentTrial.duration);
     },
 
     finishTrial: function(){
+        this.logger.logMessage(`trialFinished;${this.iTrial}`);
         if(this.checkLastTrial(this.iTrial, this.settings)){
             this.finishExperiment();
             return;
         }
         this.nextTrial();
-    },
-
-    logTrial: function(){
-
     },
 
     checkLastTrial: function(iTrial){
