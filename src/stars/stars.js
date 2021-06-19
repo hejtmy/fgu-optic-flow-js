@@ -49,7 +49,7 @@ initialize: function(canvas){
     this.stars = this.initializeStars(canvas);
 },
 
-start: function(window){
+start: function(){
     this.animate = true;
     this.executeFrame();
 },
