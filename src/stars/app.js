@@ -12,11 +12,11 @@ starsController.initialize(document.getElementById('space'));
 
 // BUTTONS -------------------
 
-document.getElementById('trace').addEventListener("click", function(e){
-    window.warp = window.warp == 1 ? 0 : 1;
-    starsController.initializeStars(document.getElementById('space'));
-    window.c.clearRect(0, 0, window.canvas.width, window.canvas.height);
-});
+//document.getElementById('trace').addEventListener("click", function(e){
+    //window.warp = window.warp == 1 ? 0 : 1;
+    //starsController.initializeStars(document.getElementById('space'));
+    //window.c.clearRect(0, 0, window.canvas.width, window.canvas.height);
+//});
 
 document.getElementById('random').addEventListener("click", function(e){
 
@@ -28,6 +28,16 @@ document.getElementById('arduino-connect-btn').addEventListener("click", functio
    arduinoController.connect();
 })
 
+document.getElementById('file-selector').addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.addEventListener('load', (event) => {
+        var settings = OpticFlowExperiment.parseSettings(JSON.parse(reader.result));
+        console.log(settings);
+        experiment.init(settings, canvas);
+    });
+    reader.readAsText(file);
+});
 // initialization -----------
 
 document['experiment'] = experiment;
