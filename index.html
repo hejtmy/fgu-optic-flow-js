@@ -1,17 +1,35 @@
 <html>
     <head>
+        <link rel="stylesheet" href="src/css/bootstrap.min.css">
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <div id='w'>
+        <div id="setup">
+            <div class="container-fluid">
+                <div class="row justify-content-md-center">
+                    <div clas="col-4">
+                        <input type="file" id="file-selector" accept=".json" class="btn btn-primary">
+                        <button type="button" id="btn-start-experiment" class="btn btn-primary">Start</a>
+                        <button type="button" id="arduino-connect-btn" class="btn btn-primary">Connect arduino</a>
+                    </div>
+                </div>
+
+                <div class="row justify-content-md-center">
+                    <div clas="col-4" id="setup-info">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="experiment">
             <div id="starsContainer">
                 <canvas id="space"></canvas>
             </div>
-            <input type="file" id="file-selector" class="star-button" style="left:30%" accept=".json">
-            <a href="#" id="random" class="star-button">Start</a>
-            <a href="#" id="arduino-connect-btn" class="star-button" style="right:30%">Connect arduino</a>
+            <div class="row">
+                <a href="#" id="btn-start-pause" class="star-button">Start</a>
+                <a href="#" id="btn-back" class="star-button" style="left:30%">Back</a>
+            </div>
         </div>
-        <script type="module" src='src/stars/app.js'></script>
         <script src="src/serial.js"></script>
+        <script type="module" src='src/stars/app.js'></script>
     </body>
 </html>

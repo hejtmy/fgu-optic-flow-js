@@ -22,6 +22,7 @@ const OpticFlowExperiment = {
     trialTimeout: null,
     running: false,
     logger: null,
+    initialized: false,
     
     init: function(settingsObj, canvas){
         this.settings = this.parseSettings(settingsObj);
@@ -29,6 +30,12 @@ const OpticFlowExperiment = {
         this.starsControler.initialize(canvas);
         this.logger = Object.create(Logger);
         this.logger.init(window);
+        this.initialized = true;
+    },
+
+    isInitialized: function(){
+        if (this.settings == null) return false;
+        return this.initialized;
     },
 
     parseSettings: function(settings){

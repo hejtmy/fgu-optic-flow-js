@@ -1,9 +1,15 @@
 html,body{
     height:100%;max-width:100%;margin:0;overflow:hidden;
     background:rgba(0,10,20,1);
-    background-size:cover;image-rendering: pixelated; font-family:sans-serif}
+    background-size:cover;
+    image-rendering: pixelated;
+    font-family:sans-serif;
+    color: #FFFFFF;
+}
 
-#space{width:100%}
+#space{
+    width:100%
+}
 
 .star-button{
     position:absolute;
