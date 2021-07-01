@@ -51,13 +51,26 @@ document.getElementById('file-selector').addEventListener('change', (event) => {
         var settings = OpticFlowExperiment.parseSettings(JSON.parse(reader.result));
         console.log(settings);
         experiment.init(settings, canvas);
-        setupInfo.innerHTML += "Experiment settings loaded: ";
-        setupInfo.innerHTML += experiment.settings.name + "(";
-        setupInfo.innerHTML += experiment.settings.version + ")";
+        setInfoText(setupInfo, experiment);
     });
     reader.readAsText(file);
 });
 
+
+function setInfoText(setupInfo, experiment){
+    let txt = "";
+    if(experiment.isInitialized()){
+    txt += "Experiment settings loaded: ";
+    txt += experiment.settings.name + "(";
+    txt += experiment.settings.version + ")"
+    } else {
+        txt += "Expeirment settings not loaded";
+    }
+    // add arduino info
+
+    // add other info
+    setupInfo.innerHTML = txt;
+}
 
 // initialization -----------
 experiment.init(OpticFlowExperiment.parseSettings(basesettings), canvas);
@@ -66,4 +79,5 @@ starsController.initialize(document.getElementById('space'));
 document['experiment'] = experiment;
 experimentWindow.style.display = "none";
 
+setInfoText(setupInfo, experiment);
 //starsController.start();
