@@ -50,6 +50,7 @@ const OpticFlowExperiment = {
     },
 
     startExperiment: function(){
+        this.logger.startLogging();
         this.iTrial = -1;
         this.starsControler.start();
         this.running = true;

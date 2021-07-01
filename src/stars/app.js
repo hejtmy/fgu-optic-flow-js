@@ -10,6 +10,8 @@ let setupWindow = document.getElementById("setup");
 let experimentWindow = document.getElementById("experiment");
 let setupInfo = document.getElementById("setup-info");
 
+let fileDropdown = document.getElementById("dropdown-save-files")
+
 // BUTTONS -------------------
 
 //document.getElementById('trace').addEventListener("click", function(e){
@@ -36,8 +38,7 @@ document.getElementById('btn-start-pause').addEventListener("click", function(e)
 })
 
 document.getElementById('btn-back').addEventListener("click", function(e){
-    experiment.startExperiment();
-    return;
+    goBackToMenu();
 });
 
 document.getElementById('arduino-connect-btn').addEventListener("click", function(e){
@@ -72,6 +73,24 @@ function setInfoText(setupInfo, experiment){
     setupInfo.innerHTML = txt;
 }
 
+function populateDrowpdown(){
+    fileDropdown[0] = new Option('', '');
+    const data = experiment.logger.getStorageData();
+    console.log(data)
+    return;
+    let i = 1;
+    data.forEach(element => {
+        fileDropdown[i] = new Option(element.timestamp, '');
+        i++;
+    });
+}
+
+function goBackToMenu(){
+    populateDrowpdown();
+    setupWindow.style.display = "block";
+    experimentWindow.style.display = "none";
+}
+
 // initialization -----------
 experiment.init(OpticFlowExperiment.parseSettings(basesettings), canvas);
 starsController.initialize(document.getElementById('space'));
@@ -80,4 +99,5 @@ document['experiment'] = experiment;
 experimentWindow.style.display = "none";
 
 setInfoText(setupInfo, experiment);
+populateDrowpdown();
 //starsController.start();

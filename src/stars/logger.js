@@ -1,20 +1,28 @@
 const Logger = {
     storage: null,
     storageName: "experimentLog",
+    logTimestamp: null,
     data: null,
 
     init: function(window, storageName = "experimentLog"){
         var d = new Date();
         //var timestamp = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
-        var timestamp = new Date().getTime();
-        this.data = {"timestamp": timestamp, "data":[]};
+        this.logTimestamp = new Date().getTime();
         this.storageName = storageName;  
-        this.window = window;
-        this.storage = this.window.localStorage;
-    },
+        this.storage = window.localStorage;
 
+    },
+    startLogging: function(){
+        let data = this.getStorageData();
+        if(data == null){
+            this.data = {[this.logTimestamp]:{"data":[]}};
+        } else {
+            data[this.logTimestamp] = {"data":[]};
+            this.data = data;
+        }
+    },
     logMessage: function(message){
-        this.data.data.push({"time":new Date().getTime(), "content":message});
+        this.data[this.logTimestamp].data.push({"time":new Date().getTime(), "content":message});
         this.saveToStorage();
     },
 
