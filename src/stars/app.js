@@ -31,7 +31,8 @@ document.getElementById('btn-start-experiment').addEventListener("click", functi
 
 
 document.getElementById('btn-start-pause').addEventListener("click", function(e){
-    experiment.startExperiment();
+    experiment.startExperiment(finishExperiment);
+    document.getElementById("experiment-buttons").style.display = "none";
     return;
     starsController.initializeStars(document.getElementById('space'));
     starsController.setFlowDirection(starsController.OpticFlowSettings.CurrentFlowDirection += 1);
@@ -124,6 +125,9 @@ function goBackToMenu(){
     experimentWindow.style.display = "none";
 }
 
+function finishExperiment(){
+    document.getElementById("experiment-buttons").style.display="block";
+}
 // INITIALIZATION -----------
 experiment.init(OpticFlowExperiment.parseSettings(basesettings), canvas);
 starsController.initialize(document.getElementById('space'));

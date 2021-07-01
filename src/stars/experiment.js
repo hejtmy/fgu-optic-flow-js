@@ -23,6 +23,7 @@ const OpticFlowExperiment = {
     running: false,
     logger: null,
     initialized: false,
+    finishCallback: null,
     
     init: function(settingsObj, canvas){
         this.settings = this.parseSettings(settingsObj);
@@ -49,13 +50,14 @@ const OpticFlowExperiment = {
         this.settings
     },
 
-    startExperiment: function(){
+    startExperiment: function(finishCallback=null){
         this.logger.startLogging();
         this.iTrial = -1;
         this.starsControler.start();
         this.running = true;
         this.nextTrial();
         this.logger.logMessage("experimentStarted");
+        this.finishCallback = finishCallback;
     },
 
     pause: function(){
@@ -66,6 +68,7 @@ const OpticFlowExperiment = {
         this.running = false;
         this.starsControler.stop();
         this.logger.logMessage("experimentFinished");
+        if(this.finishCallback != null) this.finishCallback();
     },
 
     nextTrial: function(){
