@@ -35,7 +35,8 @@ const Logger = {
     },
 
     getExperimentData: function(timestamp){
-
+        let data = this.getStorageData();
+        return data[timestamp];
     },
 
     clearStorage: function(){

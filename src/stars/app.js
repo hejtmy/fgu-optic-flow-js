@@ -57,7 +57,41 @@ document.getElementById('file-selector').addEventListener('change', (event) => {
     reader.readAsText(file);
 });
 
+fileDropdown.addEventListener('change', (e) => {
+    console.log(e.target.value);
+    var data = experiment.logger.getExperimentData(e.target.value);
+    var txt = '';
+    if(data != undefined){
+       txt = JSON.stringify(data.data);
+    }
+    document.getElementById("p-log-content").innerHTML = txt;
+});
 
+document.getElementById("btn-save-log").addEventListener('click', (e) => {
+    if(fileDropdown.selectedIndex == 0){
+        alert("select something first");
+        return;
+    }
+    var data = experiment.logger.getExperimentData(fileDropdown.value);
+    if(data == undefined){
+        alert('Something went wrong');
+        return;
+    }
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+    var downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href",     dataStr);
+    downloadAnchorNode.setAttribute("download", "trialData.json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+});
+
+document.getElementById("btn-clear-logs").addEventListener('click', (e) => {
+    experiment.logger.clearStorage();
+    populateDrowpdown();
+});
+
+// FUNCTIONS ---------------
 function setInfoText(setupInfo, experiment){
     let txt = "";
     if(experiment.isInitialized()){
@@ -77,11 +111,10 @@ function populateDrowpdown(){
     fileDropdown[0] = new Option('', '');
     const data = experiment.logger.getStorageData();
     console.log(data)
-    return;
     let i = 1;
-    data.forEach(element => {
-        fileDropdown[i] = new Option(element.timestamp, '');
-        i++;
+    Object.keys(data).forEach((e) => {
+        fileDropdown[i] = new Option(Date(e).toString(), e);
+        i++; 
     });
 }
 
@@ -91,7 +124,7 @@ function goBackToMenu(){
     experimentWindow.style.display = "none";
 }
 
-// initialization -----------
+// INITIALIZATION -----------
 experiment.init(OpticFlowExperiment.parseSettings(basesettings), canvas);
 starsController.initialize(document.getElementById('space'));
 
