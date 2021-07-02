@@ -1,7 +1,7 @@
 {
     "name":"Base",
     "duration":1000,
-    "canvasSize":{"x":300, "y":300},
+    "canvasSize":{"x":500, "y":500},
     "trials":[
         {
             "duration": 1500,

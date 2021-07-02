@@ -24,6 +24,7 @@ const OpticFlowExperiment = {
     logger: null,
     initialized: false,
     finishCallback: null,
+    canvas: null,
     
     init: function(settingsObj, canvas){
         this.settings = this.parseSettings(settingsObj);
@@ -32,6 +33,16 @@ const OpticFlowExperiment = {
         this.logger = Object.create(Logger);
         this.logger.init(window);
         this.initialized = true;
+        this.canvas = canvas;
+        this.resize(this.canvas);
+    },
+
+    resize: function(canvas){
+        let x = window.innerWidth/2 - this.settings.canvasSize.x/2;
+        let y = window.innerHeight/2 - this.settings.canvasSize.y/2;
+        let style = 'clip-path: inset(' + y + 'px ' + x + 'px ' + y + 'px ' + x + 'px);';
+        canvas.style.cssText = style;
+        console.log(style);
     },
 
     isInitialized: function(){

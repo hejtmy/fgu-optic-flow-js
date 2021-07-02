@@ -19,6 +19,9 @@ let fileDropdown = document.getElementById("dropdown-save-files")
     //starsController.initializeStars(document.getElementById('space'));
     //window.c.clearRect(0, 0, window.canvas.width, window.canvas.height);
 //});
+window.addEventListener('resize', function(event) {
+    experiment.resize(canvas);
+}, true);
 
 document.getElementById('btn-start-experiment').addEventListener("click", function(e){
     if(!experiment.isInitialized()){
