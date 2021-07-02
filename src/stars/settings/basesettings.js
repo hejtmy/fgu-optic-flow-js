@@ -2,6 +2,8 @@ export default {
     "name":"Base",
     "duration":1000,
     "canvasSize":{"x":500, "y":500},
+    "showSquare":false,
+    "showCross":true,
     "trials":[
         {
             "duration": 1500,

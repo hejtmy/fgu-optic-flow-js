@@ -32,6 +32,8 @@ arduinoController: new ArduinoController(),
 
 OpticFlowSettings: {
     CurrentFlowDirection: FlowDirection.radialin,
+    showCross: true,
+    showSquare: true
 },
 
 centralArea: {
@@ -170,10 +172,8 @@ resetStar: function(star, zmin, zmax, canvas){
     return(star)
 },
 
-drawCentralCross: function(context, canvas, centralArea, thickness = 5, length = 40){
-    // vertical
-    context.fillStyle = "#000000";
-    context.fillRect(canvas.width/2 - centralArea.width/2, canvas.height/2 - centralArea.height/2, centralArea.width, centralArea.height);
+drawCentralCross: function(context, canvas, thickness = 5, length = 40){
+    //vertical
     context.fillStyle = "#FF0000";
     context.fillRect(canvas.width/2 - length/2, canvas.height/2 - thickness/2, length, thickness);
     // horizontal
@@ -181,6 +181,11 @@ drawCentralCross: function(context, canvas, centralArea, thickness = 5, length =
     context.fillRect(canvas.width/2-thickness/2, canvas.height/2 - (length/2), thickness, length);
 },
 
+drawCentralSquare: function(context, canvas, centralArea){
+    // vertical
+    context.fillStyle = "#000000";
+    context.fillRect(canvas.width/2 - centralArea.width/2, canvas.height/2 - centralArea.height/2, centralArea.width, centralArea.height);
+},
 drawStars: function(){
     // TODO - change to ONwindowsResuze
     // Resize to the screen - change to ON 
@@ -195,7 +200,8 @@ drawStars: function(){
     }
     //c.fillStyle = "rgba(209, 255, 255, " + radius + ")";
     this.drawStars2(this.stars, this.depth, this.starSize);
-    this.drawCentralCross(this.c, this.canvas, this.centralArea);
+    if(this.OpticFlowSettings.showSquare) this.drawCentralSquare(this.c, this.canvas, this.centralArea);
+    if(this.OpticFlowSettings.showCross) this.drawCentralCross(this.c, this.canvas);
 },
 
 drawStars2: function(stars, spaceDepth, starSize){

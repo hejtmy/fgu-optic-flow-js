@@ -30,6 +30,9 @@ const OpticFlowExperiment = {
         this.settings = this.parseSettings(settingsObj);
         this.starsControler = Object.create(StarsController);
         this.starsControler.initialize(canvas);
+        this.starsControler.OpticFlowSettings.showCross = this.settings.showCross;
+        this.starsControler.OpticFlowSettings.showSquare = this.settings.showSquare;
+        
         this.logger = Object.create(Logger);
         this.logger.init(window);
         this.initialized = true;
