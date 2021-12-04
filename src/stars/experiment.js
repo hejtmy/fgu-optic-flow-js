@@ -17,8 +17,10 @@ const TrialSettings = {
 const ExperimentSettings = {
     name: "NULL",
     version: "1.0",
-    duration: 1000,
+    duration: 3000,
     canvasSize: {x:300, y:300},
+    blinkDuration: 1000,
+    blinkInterTrial: [2000, 2500],
     trials: [],
 }
 
@@ -28,6 +30,7 @@ const OpticFlowExperiment = {
     settings: null,
     currentTrial: null,
     trialTimeout: null,
+    blinkTimeout: null,
     running: false,
     logger: null,
     initialized: false,
@@ -71,7 +74,7 @@ const OpticFlowExperiment = {
         console.warn("The method is not implemented");
     },
 
-    startExperiment: function(finishCallback = null){
+    startExperiment: function(finishCallback = () => {}){
         this.logger.startLogging();
         this.iTrial = -1;
         this.starsControler.start();
@@ -80,6 +83,7 @@ const OpticFlowExperiment = {
         this.nextTrial();
         this.finishCallback = finishCallback;
         this.state = ExpeirimentState.running;
+        this.setNextBlink();
     },
 
     pause: function(){
@@ -94,6 +98,7 @@ const OpticFlowExperiment = {
         this.running = false;
         this.starsControler.stop();
         this.logger.logMessage("experimentFinished");
+        if(this.blinkTimeout!=null) clearTimeout(this.blinkTimeout);
         if(this.finishCallback != null) this.finishCallback();
     },
 
@@ -109,7 +114,24 @@ const OpticFlowExperiment = {
         //setup stars controller
         this.starsControler.setFlowDirection(this.currentTrial.movementType);
         this.logger.logMessage(`trialStarted;${this.iTrial}`);
-        this.trialTimeout = setTimeout(() => {this.finishTrial.bind(this);}, this.currentTrial.duration);
+        this.trialTimeout = setTimeout(() => {this.finishTrial();}, this.currentTrial.duration);
+    },
+
+    blink: function(){
+        this.starsControler.blink(this.settings.blinkDuration, () => {this.finishBlink()});
+        this.logger.logMessage(`blinkStarted;`);
+    },
+    
+    finishBlink: function(){
+        //log blink
+        this.logger.logMessage(`blinkFinished;`);
+        this.setNextBlink();
+    },
+
+    setNextBlink: function(){
+        // 1+ is there because random is 1 exclusive, so we need to add one
+        let time = this.settings.blinkInterTrial[0] + Math.round(Math.random() * (1 + this.settings.blinkInterTrial[1] - this.settings.blinkInterTrial[0]));
+        this.blinkTimeout = setTimeout(() => {this.blink();}, time);
     },
 
     finishTrial: function(){
