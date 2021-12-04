@@ -84,7 +84,13 @@ document.getElementById("btn-clear-logs").addEventListener('click', (e) => {
     populateDrowpdown();
 });
 
+document.addEventListener('keydown', handleKey);
+
 // FUNCTIONS ---------------
+function handleKey(key){
+    experiment.handleKey(key);
+}
+
 function setInfoText(setupInfo, experiment){
     let txt = "";
     if(experiment.isInitialized()){
@@ -120,6 +126,7 @@ function goBackToMenu(){
 function finishExperiment(){
     document.getElementById("experiment-buttons").style.display = "block";
 }
+
 
 // INITIALIZATION -----------
 experiment.init(OpticFlowExperiment.parseSettings(basesettings), canvas);
