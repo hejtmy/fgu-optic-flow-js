@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <script src="src/css/js/jquery.min.js"></script>
+        <script src="src/css/js/bootstrap.bundle.min.js"></script>
+        <link rel="stylesheet" href="src/css/bootstrap.min.css">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div id="setup">
+            <div class="container-fluid">
+                <div class="row justify-content-md-center">
+                    <div clas="col-3">
+                        <button type="button" id="btn-random" class="btn btn-primary">Start</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="experiment">
+            <div id="starsContainer">
+                <canvas id="space"></canvas>
+            </div>
+        </div>
+        <script src="src/serial.js"></script>
+        <script type="module" src='src/stars/stars-visualiser.js'></script>
+    </body>
+</html>
