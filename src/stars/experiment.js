@@ -64,7 +64,7 @@ const OpticFlowExperiment = {
         this.settings
     },
 
-    startExperiment: function(finishCallback=null){
+    startExperiment: function(finishCallback = null){
         this.logger.startLogging();
         this.iTrial = -1;
         this.starsControler.start();

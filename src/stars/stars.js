@@ -200,8 +200,12 @@ drawStars: function(){
     }
     //c.fillStyle = "rgba(209, 255, 255, " + radius + ")";
     this.drawStars2(this.stars, this.depth, this.starSize);
-    if(this.OpticFlowSettings.showSquare) this.drawCentralSquare(this.c, this.canvas, this.centralArea);
-    if(this.OpticFlowSettings.showCross) this.drawCentralCross(this.c, this.canvas);
+    if(this.OpticFlowSettings.showSquare){
+        this.drawCentralSquare(this.c, this.canvas, this.centralArea);
+    }
+    if(this.OpticFlowSettings.showCross){
+        this.drawCentralCross(this.c, this.canvas);
+    }
 },
 
 drawStars2: function(stars, spaceDepth, starSize){

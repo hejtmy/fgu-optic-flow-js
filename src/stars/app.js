@@ -1,24 +1,17 @@
 import { OpticFlowExperiment, ExperimentSettings, TrialSettings } from './experiment.js';
-import { StarsController, FlowDirection } from './stars.js';
 import basesettings from './settings/basesettings.js';
 
 let experiment = OpticFlowExperiment;
-let starsController = Object.create(StarsController);
 
 var canvas = document.getElementById("space");
 let setupWindow = document.getElementById("setup");
 let experimentWindow = document.getElementById("experiment");
 let setupInfo = document.getElementById("setup-info");
 
-let fileDropdown = document.getElementById("dropdown-save-files")
+let fileDropdown = document.getElementById("dropdown-save-files");
 
 // BUTTONS -------------------
 
-//document.getElementById('trace').addEventListener("click", function(e){
-    //window.warp = window.warp == 1 ? 0 : 1;
-    //starsController.initializeStars(document.getElementById('space'));
-    //window.c.clearRect(0, 0, window.canvas.width, window.canvas.height);
-//});
 window.addEventListener('resize', function(event) {
     experiment.resize(canvas);
 }, true);
@@ -32,13 +25,10 @@ document.getElementById('btn-start-experiment').addEventListener("click", functi
     experimentWindow.style.display = "block";
 });
 
-
 document.getElementById('btn-start-pause').addEventListener("click", function(e){
     experiment.startExperiment(finishExperiment);
     document.getElementById("experiment-buttons").style.display = "none";
     return;
-    starsController.initializeStars(document.getElementById('space'));
-    starsController.setFlowDirection(starsController.OpticFlowSettings.CurrentFlowDirection += 1);
 })
 
 document.getElementById('btn-back').addEventListener("click", function(e){
@@ -129,11 +119,11 @@ function goBackToMenu(){
 }
 
 function finishExperiment(){
-    document.getElementById("experiment-buttons").style.display="block";
+    document.getElementById("experiment-buttons").style.display = "block";
 }
+
 // INITIALIZATION -----------
 experiment.init(OpticFlowExperiment.parseSettings(basesettings), canvas);
-starsController.initialize(document.getElementById('space'));
 
 document['experiment'] = experiment;
 experimentWindow.style.display = "none";
