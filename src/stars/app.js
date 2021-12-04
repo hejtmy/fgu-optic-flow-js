@@ -7,13 +7,12 @@ var canvas = document.getElementById("space");
 let setupWindow = document.getElementById("setup");
 let experimentWindow = document.getElementById("experiment");
 let setupInfo = document.getElementById("setup-info");
-
 let fileDropdown = document.getElementById("dropdown-save-files");
 
 // BUTTONS -------------------
 
 window.addEventListener('resize', function(event) {
-    experiment.resize(canvas);
+    experiment.resize();
 }, true);
 
 document.getElementById('btn-start-experiment').addEventListener("click", function(e){

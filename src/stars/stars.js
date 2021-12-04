@@ -16,34 +16,35 @@ numStars: 500,
 radius: '0.'+ Math.floor(Math.random() * 9) + 1,
 focalLength: null,
 warp: 0,
-centerX:null,
-centerY:null,
+centerX: null,
+centerY: null,
 speed: 5,
 horizontalSpeed: 0.3,
 depthSpeed: 0.75,
 starSize: 10,
 stars: [], 
-lastTime:null,
+lastTime: null,
 deltaTime: null,
 animate: true,
-window:null,
+window: null,
 
 arduinoController: new ArduinoController(),
 
 OpticFlowSettings: {
     CurrentFlowDirection: FlowDirection.radialin,
     showCross: true,
-    showSquare: true
+    showSquare: true,
+    canvasSize: {x: 600, y: 600},
 },
 
 centralArea: {
-    width:150,
-    height:150
+    width: 150,
+    height: 150
 },
 
 // EXECUTION -----
 
-initialize: function(canvas){
+initialize: function(canvas, window){
     this.canvas = canvas;
     this.c = canvas.getContext('2d');
     this.focalLength = canvas.width * 2;
@@ -58,6 +59,10 @@ start: function(){
 
 stop : function(){
     this.animate = false;
+},
+
+isRunning: function(){
+    return this.animate;
 },
 
 executeFrame: function(){
@@ -114,6 +119,15 @@ moveStars: function(stars){
             break;
     }
 },
+
+resize: function(){
+    let x = this.window.innerWidth/2 - this.OpticFlowSettings.canvasSize.x/2;
+    let y = this.window.innerHeight/2 - this.OpticFlowSettings.canvasSize.y/2;
+    let style = 'clip-path: inset(' + y + 'px ' + x + 'px ' + y + 'px ' + x + 'px);';
+    this.canvas.style.cssText = style;
+    console.log(style);
+},
+
 
 moveRandom: function(stars){
     for(var i = 0; i < stars.length; i++){

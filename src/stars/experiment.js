@@ -29,7 +29,7 @@ const OpticFlowExperiment = {
     init: function(settingsObj, canvas){
         this.settings = this.parseSettings(settingsObj);
         this.starsControler = Object.create(StarsController);
-        this.starsControler.initialize(canvas);
+        this.starsControler.initialize(canvas, window);
         this.starsControler.OpticFlowSettings.showCross = this.settings.showCross;
         this.starsControler.OpticFlowSettings.showSquare = this.settings.showSquare;
         
@@ -40,12 +40,8 @@ const OpticFlowExperiment = {
         this.resize(this.canvas);
     },
 
-    resize: function(canvas){
-        let x = window.innerWidth/2 - this.settings.canvasSize.x/2;
-        let y = window.innerHeight/2 - this.settings.canvasSize.y/2;
-        let style = 'clip-path: inset(' + y + 'px ' + x + 'px ' + y + 'px ' + x + 'px);';
-        canvas.style.cssText = style;
-        console.log(style);
+    resize: function(){
+        this.starsControler.resize();
     },
 
     isInitialized: function(){
@@ -97,7 +93,6 @@ const OpticFlowExperiment = {
         //setup stars copntroller
         this.starsControler.setFlowDirection(this.currentTrial.movementType);
         this.logger.logMessage(`trialStarted;${this.iTrial}`);
-        // add timeout
         this.trialTimeout = setTimeout(this.finishTrial.bind(this), this.currentTrial.duration);
     },
 
