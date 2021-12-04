@@ -27,6 +27,7 @@ lastTime: null,
 deltaTime: null,
 animate: true,
 window: null,
+blinkTimeout: null,
 
 arduinoController: new ArduinoController(),
 
@@ -57,8 +58,19 @@ start: function(){
     this.executeFrame();
 },
 
-stop : function(){
+stop: function(){
     this.animate = false;
+},
+
+blink: function(duration, finishCallback = () => {}){
+    if(!this.OpticFlowSettings.showCross) return;
+    this.OpticFlowSettings.showCross = false;
+    this.blinkTimeout = setTimeout(() => {this.finishBlink(finishCallback);}, duration);
+},
+
+finishBlink: function(finishCallback){
+    finishCallback();
+    this.OpticFlowSettings.showCross = true;
 },
 
 isRunning: function(){
@@ -127,7 +139,6 @@ resize: function(){
     this.canvas.style.cssText = style;
     console.log(style);
 },
-
 
 moveRandom: function(stars){
     for(var i = 0; i < stars.length; i++){
@@ -200,6 +211,7 @@ drawCentralSquare: function(context, canvas, centralArea){
     context.fillStyle = "#000000";
     context.fillRect(canvas.width/2 - centralArea.width/2, canvas.height/2 - centralArea.height/2, centralArea.width, centralArea.height);
 },
+
 drawStars: function(){
     // TODO - change to ONwindowsResuze
     // Resize to the screen - change to ON 
@@ -230,6 +242,7 @@ drawStars2: function(stars, spaceDepth, starSize){
         this.c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
     }
 }
+
 }
 
 // EXECUTE ----------------------

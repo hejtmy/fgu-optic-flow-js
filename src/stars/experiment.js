@@ -109,7 +109,7 @@ const OpticFlowExperiment = {
         //setup stars controller
         this.starsControler.setFlowDirection(this.currentTrial.movementType);
         this.logger.logMessage(`trialStarted;${this.iTrial}`);
-        this.trialTimeout = setTimeout(this.finishTrial.bind(this), this.currentTrial.duration);
+        this.trialTimeout = setTimeout(() => {this.finishTrial.bind(this);}, this.currentTrial.duration);
     },
 
     finishTrial: function(){

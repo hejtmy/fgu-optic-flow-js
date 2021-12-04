@@ -8,6 +8,7 @@ let experimentWindow = document.getElementById("experiment");
 
 let selectMovement = document.getElementById('select-movement');
 let btnStartStop = document.getElementById('btn-startstop');
+let btnBlink = document.getElementById('btn-blink');
 
 // BUTTONS -------------------
 
@@ -21,6 +22,14 @@ btnStartStop.addEventListener('click', function(event){
     } else {
         starsController.start();
     }
+})
+
+btnBlink.addEventListener('click', function(e){
+    let startTime = new Date().getTime();
+    starsController.blink(200, () => {
+        let finishTime = new Date().getTime();
+        console.log(finishTime - startTime);
+    });
 })
 
 selectMovement.addEventListener("change", function(event){
