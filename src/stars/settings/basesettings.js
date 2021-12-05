@@ -10,8 +10,11 @@ export default {
             "movementType": 0
         },
         {
-            "duration": 1200,
+            "duration": 1500,
             "movementType": 1
+        },
+        {
+            "isPause": true
         },
         {
             "duration": 1500,

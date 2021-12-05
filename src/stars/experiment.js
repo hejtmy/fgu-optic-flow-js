@@ -10,7 +10,7 @@ const ExpeirimentState = Object.freeze({
 })
 
 const TrialSettings = {
-    duration: 1000,
+    duration: 2000,
     movementType: 0,
     isPause: false,
     automaticContinue: true
@@ -21,8 +21,8 @@ const ExperimentSettings = {
     version: "1.0",
     duration: 3000,
     canvasSize: {x:300, y:300},
-    blinkDuration: 1000,
-    blinkInterTrial: [2000, 2500],
+    blinkDuration: 200,
+    blinkInterTrial: [800, 1200],
     trials: [],
 }
 
@@ -85,15 +85,18 @@ const OpticFlowExperiment = {
         this.nextTrial();
         this.finishCallback = finishCallback;
         this.state = ExpeirimentState.running;
-        this.setNextBlink();
     },
 
     pause: function(){
         this.state = ExpeirimentState.paused;
+        if(this.blinkTimeout != null) clearTimeout(this.blinkTimeout);
+        this.starsControler.hide();
+        this.starsControler.showMessage("Pauza. Stiskněte mezerník pro pokračování.");
     },
 
     resume: function(){
-        this.state = ExpeirimentState.running;        
+        this.state = ExpeirimentState.running;
+        this.starsControler.show();
     },
 
     finishExperiment: function(){
@@ -119,21 +122,24 @@ const OpticFlowExperiment = {
         //setup stars controller
         this.starsControler.setFlowDirection(this.currentTrial.movementType);
         this.logger.logMessage(`trialStarted;${this.iTrial}`);
-        this.trialTimeout = setTimeout(() => {this.finishTrial();}, this.currentTrial.duration);
+        this.trialTimeout = setTimeout(() => {
+            this.finishTrial();
+        }, this.currentTrial.duration);
+        this.setNextBlink();
     },
 
     startPauseTrial: function(){
         this.pause();
         this.logger.logMessage(`trialStarted;${this.iTrial}`);
         if(this.currentTrial.automaticContinue) {
-            this.trialTimeout = setTimeout(() => {this.resumePauseTrial();}, this.currentTrial.duration);
+            this.trialTimeout = setTimeout(() => {
+                this.resumePauseTrial();
+            }, this.currentTrial.duration);
         }
     },
 
     resumePauseTrial: function(){
         // if we escaped with a key
-        if(this.trialTimeout != null) clearTimeout(this.trialTimeout);
-        this.trialTimeout
         this.resume();
         this.finishTrial();
     },
@@ -144,6 +150,8 @@ const OpticFlowExperiment = {
             this.finishExperiment();
             return;
         }
+        if(this.trialTimeout != null) clearTimeout(this.trialTimeout);
+        if(this.blinkTimeout != null) clearTimeout(this.blinkTimeout);
         this.nextTrial();
     },
 
@@ -153,38 +161,51 @@ const OpticFlowExperiment = {
 
     // MESSAGES -------------------------------
     showMessage: function(message){
-        
+
     },
 
     // BLINKING ----------------------------------
-    blink: function(){
-        this.starsControler.blink(this.settings.blinkDuration, () => {this.finishBlink()});
+    blink: function(finishCallback = () => {}){
+        this.starsControler.blink(this.settings.blinkDuration, () => {
+            this.finishBlink();
+            finishCallback();
+        });
         this.logger.logMessage(`blinkStarted;`);
     },
     
     finishBlink: function(){
         //log blink
         this.logger.logMessage(`blinkFinished;`);
-        this.setNextBlink();
     },
 
     setNextBlink: function(){
         // 1+ is there because random is 1 exclusive, so we need to add one
         let time = this.settings.blinkInterTrial[0] + Math.round(Math.random() * (1 + this.settings.blinkInterTrial[1] - this.settings.blinkInterTrial[0]));
-        this.blinkTimeout = setTimeout(() => {this.blink();}, time);
+        this.blinkTimeout = setTimeout(() => {
+            this.blink();
+        }, time);
     },
 
     handleKey: function(key){
-        if(this.state != ExpeirimentState.running) return;
+        if(this.state < ExpeirimentState.running | 
+            this.state >= ExperimentSettings.finished) return;
         console.log(key.code);
 
         // Logging ---------------------------
         this.logger.logMessage(`keypress;${key.code}`);
 
+        // Handles Pause
+        if(key.code == 'Escape'){
+            //this.pause();
+            return;
+        }
+
         // Handles resuming trials with a spacebar ------------
+
         if(this.currentTrial.isPause){
-            if(key.code == 32){
+            if(key.code == 'Space'){
                 this.resumePauseTrial();
+                return;
             }
         }
     }
