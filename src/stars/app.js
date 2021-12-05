@@ -1,6 +1,7 @@
 import { OpticFlowExperiment, ExperimentSettings, TrialSettings } from './experiment.js';
 import basesettings from './settings/basesettings.js';
 
+let arduinoController = new ArduinoController();
 let experiment = OpticFlowExperiment;
 
 var canvas = document.getElementById("space");
@@ -126,7 +127,6 @@ function goBackToMenu(){
 function finishExperiment(){
     document.getElementById("experiment-buttons").style.display = "block";
 }
-
 
 // INITIALIZATION -----------
 experiment.init(OpticFlowExperiment.parseSettings(basesettings), canvas);
