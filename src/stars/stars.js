@@ -26,6 +26,7 @@ stars: [],
 lastTime: null,
 deltaTime: null,
 animate: true,
+hidden: false,
 window: null,
 blinkTimeout: null,
 
@@ -60,6 +61,17 @@ start: function(){
 
 stop: function(){
     this.animate = false;
+},
+
+hide: function(){
+    this.stop();
+    this.c.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.hidden = true;
+},
+
+show: function(){
+    this.start();
+    this.hidden = false;
 },
 
 blink: function(duration, finishCallback = () => {}){
@@ -220,15 +232,18 @@ drawStars: function(){
       this.canvas.height = window.innerHeight;
       this.stars = this.initializeStars(this.canvas);
     }
+
     if(this.warp == 0){
         this.c.fillStyle = "rgba(0,10,20,1)";
         this.c.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
+
     //c.fillStyle = "rgba(209, 255, 255, " + radius + ")";
     this.drawStars2(this.stars, this.depth, this.starSize);
     if(this.OpticFlowSettings.showSquare){
         this.drawCentralSquare(this.c, this.canvas, this.centralArea);
     }
+
     if(this.OpticFlowSettings.showCross){
         this.drawCentralCross(this.c, this.canvas);
     }

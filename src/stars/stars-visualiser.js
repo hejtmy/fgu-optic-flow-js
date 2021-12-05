@@ -9,6 +9,7 @@ let experimentWindow = document.getElementById("experiment");
 let selectMovement = document.getElementById('select-movement');
 let btnStartStop = document.getElementById('btn-startstop');
 let btnBlink = document.getElementById('btn-blink');
+let btnShowHide = document.getElementById('btn-showhide');
 
 // BUTTONS -------------------
 
@@ -31,6 +32,15 @@ btnBlink.addEventListener('click', function(e){
         console.log(finishTime - startTime);
     });
 })
+
+btnShowHide.addEventListener('click', function(e){
+    if(starsController.hidden){
+        starsController.show();
+    } else {
+        starsController.hide();
+    }
+})
+
 
 selectMovement.addEventListener("change", function(event){
     starsController.setFlowDirection(Number(selectMovement.value));
