@@ -70,8 +70,22 @@ hide: function(){
 },
 
 show: function(){
+    this.clearMessage();
     this.start();
     this.hidden = false;
+},
+
+showMessage: function(message){
+    let x = this.canvas.width/2;
+    let y = this.canvas.height/2;
+    this.c.font = "30px Arial";
+    this.c.fillStyle = "white";
+    this.c.textAlign = "center";
+    this.c.fillText(message, x, y);
+},
+
+clearMessage: function(){
+
 },
 
 blink: function(duration, finishCallback = () => {}){

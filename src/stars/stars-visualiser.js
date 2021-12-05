@@ -10,6 +10,7 @@ let selectMovement = document.getElementById('select-movement');
 let btnStartStop = document.getElementById('btn-startstop');
 let btnBlink = document.getElementById('btn-blink');
 let btnShowHide = document.getElementById('btn-showhide');
+let btnMessage = document.getElementById('btn-message');
 
 // BUTTONS -------------------
 
@@ -41,6 +42,9 @@ btnShowHide.addEventListener('click', function(e){
     }
 })
 
+btnMessage.addEventListener('click', function(e){
+    starsController.showMessage("MESSAGE");
+})
 
 selectMovement.addEventListener("change", function(event){
     starsController.setFlowDirection(Number(selectMovement.value));
