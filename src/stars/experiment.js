@@ -12,6 +12,8 @@ const ExpeirimentState = Object.freeze({
 const TrialSettings = {
     duration: 1000,
     movementType: 0,
+    isPause: false,
+    automaticContinue: true
 }
 
 const ExperimentSettings = {
@@ -87,7 +89,7 @@ const OpticFlowExperiment = {
     },
 
     pause: function(){
-        this.state = ExpeirimentState.paused;        
+        this.state = ExpeirimentState.paused;
     },
 
     resume: function(){
@@ -110,11 +112,30 @@ const OpticFlowExperiment = {
 
     startTrial: function(){
         console.log("trial starting" + this.iTrial);
-        console.log(this.currentTrial.movementType);
+        if(this.currentTrial.isPause){
+            this.startPauseTrial();
+            return;
+        }
         //setup stars controller
         this.starsControler.setFlowDirection(this.currentTrial.movementType);
         this.logger.logMessage(`trialStarted;${this.iTrial}`);
         this.trialTimeout = setTimeout(() => {this.finishTrial();}, this.currentTrial.duration);
+    },
+
+    startPauseTrial: function(){
+        this.pause();
+        this.logger.logMessage(`trialStarted;${this.iTrial}`);
+        if(this.currentTrial.automaticContinue) {
+            this.trialTimeout = setTimeout(() => {this.resumePauseTrial();}, this.currentTrial.duration);
+        }
+    },
+
+    resumePauseTrial: function(){
+        // if we escaped with a key
+        if(this.trialTimeout != null) clearTimeout(this.trialTimeout);
+        this.trialTimeout
+        this.resume();
+        this.finishTrial();
     },
 
     finishTrial: function(){
@@ -128,6 +149,11 @@ const OpticFlowExperiment = {
 
     checkLastTrial: function(iTrial){
         return this.iTrial >= this.settings.trials.length - 1;
+    },
+
+    // MESSAGES -------------------------------
+    showMessage: function(message){
+        
     },
 
     // BLINKING ----------------------------------
@@ -147,10 +173,20 @@ const OpticFlowExperiment = {
         let time = this.settings.blinkInterTrial[0] + Math.round(Math.random() * (1 + this.settings.blinkInterTrial[1] - this.settings.blinkInterTrial[0]));
         this.blinkTimeout = setTimeout(() => {this.blink();}, time);
     },
+
     handleKey: function(key){
         if(this.state != ExpeirimentState.running) return;
         console.log(key.code);
+
+        // Logging ---------------------------
         this.logger.logMessage(`keypress;${key.code}`);
+
+        // Handles resuming trials with a spacebar ------------
+        if(this.currentTrial.isPause){
+            if(key.code == 32){
+                this.resumePauseTrial();
+            }
+        }
     }
 }
 
