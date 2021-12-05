@@ -117,6 +117,20 @@ const OpticFlowExperiment = {
         this.trialTimeout = setTimeout(() => {this.finishTrial();}, this.currentTrial.duration);
     },
 
+    finishTrial: function(){
+        this.logger.logMessage(`trialFinished;${this.iTrial}`);
+        if(this.checkLastTrial(this.iTrial, this.settings)){
+            this.finishExperiment();
+            return;
+        }
+        this.nextTrial();
+    },
+
+    checkLastTrial: function(iTrial){
+        return this.iTrial >= this.settings.trials.length - 1;
+    },
+
+    // BLINKING ----------------------------------
     blink: function(){
         this.starsControler.blink(this.settings.blinkDuration, () => {this.finishBlink()});
         this.logger.logMessage(`blinkStarted;`);
@@ -133,20 +147,6 @@ const OpticFlowExperiment = {
         let time = this.settings.blinkInterTrial[0] + Math.round(Math.random() * (1 + this.settings.blinkInterTrial[1] - this.settings.blinkInterTrial[0]));
         this.blinkTimeout = setTimeout(() => {this.blink();}, time);
     },
-
-    finishTrial: function(){
-        this.logger.logMessage(`trialFinished;${this.iTrial}`);
-        if(this.checkLastTrial(this.iTrial, this.settings)){
-            this.finishExperiment();
-            return;
-        }
-        this.nextTrial();
-    },
-
-    checkLastTrial: function(iTrial){
-        return this.iTrial >= this.settings.trials.length - 1;
-    },
-
     handleKey: function(key){
         if(this.state != ExpeirimentState.running) return;
         console.log(key.code);
