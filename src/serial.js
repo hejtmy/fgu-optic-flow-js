@@ -45,13 +45,20 @@ class ArduinoController {
         if(!this.connected) return;
         this.serialController.write("BLINK!");
     }
-    pulseUp(){
+
+    async pulseUp(callback = () => {}){
         if(!this.connected) return;
         this.serialController.write("PULSE+!");
+        await this.serialController.read((value) => {
+            callback();
+        })
     }
-    pulseDown(){
+    async pulseDown(callback = () => {}){
         if(!this.connected) return;
         this.serialController.write("PULSE-!");
+        await this.serialController.read((value) => {
+            callback();
+        })
     }
 }
 
@@ -86,6 +93,7 @@ class SerialController {
     }
 
     async write(data) {
+        this.keepReading = false;
         const dataArrayBuffer = this.encoder.encode(data);
         return await this.writer.write(dataArrayBuffer);
     }

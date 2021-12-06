@@ -30,8 +30,6 @@ hidden: false,
 window: null,
 blinkTimeout: null,
 
-arduinoController: new ArduinoController(),
-
 OpticFlowSettings: {
     CurrentFlowDirection: FlowDirection.radialin,
     showCross: true,
@@ -115,8 +113,6 @@ executeFrame: function(){
 },
 
 initializeStars: function(canvas){
-    this.arduinoController.blink();
-
     this.centerX = canvas.width / 2;
     this.centerY = canvas.height / 2;
     
