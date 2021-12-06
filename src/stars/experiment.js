@@ -49,6 +49,7 @@ const OpticFlowExperiment = {
         
         this.logger = Object.create(Logger);
         this.logger.init(window);
+        this.logger.addSettings(settingsObj);
         this.initialized = true;
         this.canvas = canvas;
         this.resize(this.canvas);
