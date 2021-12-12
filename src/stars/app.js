@@ -137,6 +137,7 @@ function populateDrowpdown(){
     fileDropdown[0] = new Option('', '');
     const data = experiment.logger.getStorageData();
     console.log(data)
+    if(data == null) return;
     let i = 1;
     Object.keys(data).forEach((e) => {
         fileDropdown[i] = new Option(Date(e).toString(), e);
