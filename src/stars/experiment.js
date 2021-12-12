@@ -33,6 +33,7 @@ const OpticFlowExperiment = {
     currentTrial: null,
     trialTimeout: null,
     blinkTimeout: null,
+    neuroduinoTimeout: null,
     neuroduino: null,
     running: false,
     logger: null,
@@ -47,10 +48,9 @@ const OpticFlowExperiment = {
         this.starsControler.initialize(canvas, window);
         this.starsControler.OpticFlowSettings.showCross = this.settings.showCross;
         this.starsControler.OpticFlowSettings.showSquare = this.settings.showSquare;
-        
+
         this.logger = Object.create(Logger);
         this.logger.init(window);
-        this.logger.addSettings(settingsObj);
 
         this.initialized = true;
         this.canvas = canvas;
@@ -59,13 +59,9 @@ const OpticFlowExperiment = {
         this.state = ExpeirimentState.initialized;
     },
 
-    initNeuroduino: function(neuroduino){
-        if(!neuroduino.connected){
-            console.warn("the neuroduino needs to be connected");
-            return;
-        }
-        this.neuroduino = neuroduino;
+    initLogger: function(){
     },
+
 
     resize: function(){
         this.starsControler.resize();
@@ -88,6 +84,7 @@ const OpticFlowExperiment = {
     },
 
     startExperiment: function(finishCallback = () => {}){
+        this.logger.addSettings(this.settings);
         this.logger.startLogging();
         this.iTrial = -1;
         this.starsControler.start();
@@ -137,7 +134,7 @@ const OpticFlowExperiment = {
             this.finishTrial();
         }, this.currentTrial.duration);
         this.setNextBlink();
-        this.neuroduinoPulseUp();
+        this.neuroduinoPulse();
     },
 
     startPauseTrial: function(){
@@ -177,9 +174,28 @@ const OpticFlowExperiment = {
     },
 
     // NEURODUINO ---------------------------
-    neuroduinoPulseUp: function(){
+
+    initNeuroduino: function(neuroduino){
+        if(!neuroduino.connected){
+            console.warn("the neuroduino needs to be connected");
+            return;
+        }
+        this.neuroduino = neuroduino;
+        this.neuroduino.startReading((value) => {this.neuroduinoHandleMessage(value)});
+    },
+
+    neuroduinoPulse: function(){
         if(this.neuroduino == null) return;
-        this.neuroduino.blink();
+        this.logger.logMessage(`neuroduino;pulseUp`);
+        this.neuroduino.pulseUp();
+        this.neuroduinoTimeout = setTimeout(() => {
+            this.logger.logMessage(`neuroduino;pulseDown`);
+            this.neuroduino.pulseDown();
+        }, 200);
+    },
+
+    neuroduinoHandleMessage(value){
+        this.logger.logMessage(`neuroduinoMessage;${value}`);
     },
 
     // BLINKING ----------------------------------
