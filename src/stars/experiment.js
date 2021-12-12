@@ -33,6 +33,7 @@ const OpticFlowExperiment = {
     currentTrial: null,
     trialTimeout: null,
     blinkTimeout: null,
+    neuroduino: null,
     running: false,
     logger: null,
     initialized: false,
@@ -50,11 +51,20 @@ const OpticFlowExperiment = {
         this.logger = Object.create(Logger);
         this.logger.init(window);
         this.logger.addSettings(settingsObj);
+
         this.initialized = true;
         this.canvas = canvas;
         this.resize(this.canvas);
 
         this.state = ExpeirimentState.initialized;
+    },
+
+    initNeuroduino: function(neuroduino){
+        if(!neuroduino.connected){
+            console.warn("the neuroduino needs to be connected");
+            return;
+        }
+        this.neuroduino = neuroduino;
     },
 
     resize: function(){
@@ -127,6 +137,7 @@ const OpticFlowExperiment = {
             this.finishTrial();
         }, this.currentTrial.duration);
         this.setNextBlink();
+        this.neuroduinoPulseUp();
     },
 
     startPauseTrial: function(){
@@ -163,6 +174,12 @@ const OpticFlowExperiment = {
     // MESSAGES -------------------------------
     showMessage: function(message){
 
+    },
+
+    // NEURODUINO ---------------------------
+    neuroduinoPulseUp: function(){
+        if(this.neuroduino == null) return;
+        this.neuroduino.blink();
     },
 
     // BLINKING ----------------------------------

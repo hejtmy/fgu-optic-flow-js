@@ -1,7 +1,7 @@
 import { OpticFlowExperiment, ExperimentSettings, TrialSettings } from './experiment.js';
 import basesettings from './settings/basesettings.js';
 
-let arduinoController = new ArduinoController();
+const arduinoController = new ArduinoController();
 let experiment = OpticFlowExperiment;
 
 var canvas = document.getElementById("space");
@@ -9,6 +9,8 @@ let setupWindow = document.getElementById("setup");
 let experimentWindow = document.getElementById("experiment");
 let setupInfo = document.getElementById("setup-info");
 let fileDropdown = document.getElementById("dropdown-save-files");
+let neuroduinoStatus = document.getElementById("neuroduino-status-info")
+let btnNeuroduinoBlink = document.getElementById("btn-neuroduino-blink")
 
 // BUTTONS -------------------
 
@@ -17,12 +19,7 @@ window.addEventListener('resize', function(event) {
 }, true);
 
 document.getElementById('btn-start-experiment').addEventListener("click", function(e){
-    if(!experiment.isInitialized()){
-        alert("Experiment not initialized. Load settings first");
-        return;
-    }
-    setupWindow.style.display = "none";
-    experimentWindow.style.display = "block";
+    tryStartExperiment();
 });
 
 document.getElementById('btn-start-pause').addEventListener("click", function(e){
@@ -36,7 +33,11 @@ document.getElementById('btn-back').addEventListener("click", function(e){
 });
 
 document.getElementById('arduino-connect-btn').addEventListener("click", function(e){
-   arduinoController.connect();
+    connectNeuroduino();
+})
+
+btnNeuroduinoBlink.addEventListener("click", () => {
+    neuroduinoBlink();
 })
 
 document.getElementById('file-selector').addEventListener('change', (event) => {
@@ -92,6 +93,31 @@ function handleKey(key){
     experiment.handleKey(key);
 }
 
+function tryStartExperiment(){
+    if(!experiment.isInitialized()){
+        alert("Experiment not initialized. Load settings first");
+        return;
+    }
+    if(arduinoController.connected){
+        experiment.initNeuroduino(arduinoController);
+    }
+    setupWindow.style.display = "none";
+    experimentWindow.style.display = "block";
+}
+
+async function connectNeuroduino(){
+   neuroduinoStatus.innerHTML = "Neuroduino is connecting";
+   let connected = await arduinoController.connect();
+   console.log(connected);
+   let txt = `Neuroduino connected: ${connected}`;
+   neuroduinoStatus.innerHTML = txt;
+   btnNeuroduinoBlink.disabled = !connected;
+}
+
+async function neuroduinoBlink(){
+    arduinoController.blink();
+}
+
 function setInfoText(setupInfo, experiment){
     let txt = "";
     if(experiment.isInitialized()){
@@ -136,4 +162,3 @@ experimentWindow.style.display = "none";
 
 setInfoText(setupInfo, experiment);
 populateDrowpdown();
-//starsController.start();

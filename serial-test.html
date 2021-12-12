@@ -28,7 +28,7 @@
   </div>
   <div id="serial-messages-container"></div>
 
-  <script src="serial.js"></script>
+  <script src="src/serial.js"></script>
   <script>
     const arduinoController = new ArduinoController();
     const getSerialMessages = document.getElementById('get-serial-messages');
@@ -39,39 +39,48 @@
     const serialMessagesContainer = document.getElementById('serial-messages-container');
 
     messageForm.addEventListener('submit', event => {
-      event.preventDefault();
-      arduinoController.serialController.write(event.target.firstElementChild.value);
-      getSerialMessage();
+        event.preventDefault();
+        arduinoController.serialController.write(event.target.firstElementChild.value);
+        getSerialMessage();
     });
 
     getSerialMessages.addEventListener('pointerdown', async () => {
-      getSerialMessage();
+        getSerialMessage();
     });
 
     document.getElementById('blink-btn').addEventListener('click', async () => {
-        arduinoController.blink();
-    });  
+      arduinoController.blink();
+    });
+    
     document.getElementById('pulseup-btn').addEventListener('click', async () => {
-        arduinoController.pulseUp();
-    });  
+        let timestamp = new Date().getTime();
+        console.log(timestamp);
+        arduinoController.pulseUp(callback = () => {
+            let endTimestamp = new Date().getTime();
+            console.log("returned in " + (endTimestamp - timestamp) + "ms");
+        });
+    });
+
     document.getElementById('pulsedown-btn').addEventListener('click', async () => {
         arduinoController.pulseDown();
-    });  
+    });
+
     async function getSerialMessage() {
-      await arduinoController.serialController.read() + '\n';
-      serialMessagesContainer.innerText += arduinoController.serialController.lastValue + "\n";
+        await arduinoController.serialController.read() + '\n';
+        serialMessagesContainer.innerText += arduinoController.serialController.lastValue + "\n";
     }
 
     connectButton.addEventListener('click', async () => {
         var connected = await arduinoController.connect();
+        console.log("ahsit");
+        console.log(connected);
         if(connected){
             connectButton.innerHTML = "Disconnect";
-                serialMessagesContainer.removeAttribute('disabled');
-                messageInput.removeAttribute('disabled');
-                submitButton.removeAttribute('disabled');
+            serialMessagesContainer.removeAttribute('disabled');
+            messageInput.removeAttribute('disabled');
+            submitButton.removeAttribute('disabled');
         }
     })
-
   </script>
 </body>
 </html>

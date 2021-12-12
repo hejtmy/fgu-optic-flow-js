@@ -18,6 +18,7 @@ class LineBreakTransformer {
 class ArduinoController {
     serialController;
     connected;
+    messageCallback;
 
     constructor(){
         this.serialController = new SerialController();
@@ -32,13 +33,22 @@ class ArduinoController {
         this.serialController.write("WHO!");
         await this.serialController.read((value) => {
             console.log("value came " + value);
-            if(value == "ARDUINO"){
+            if(value == "NEURODUINO"){
                 this.serialController.stopReading();
                 this.serialController.write("DONE!");
                 this.connected = true;
             }
         })
         return this.connected;
+    }
+
+    startReading(callback = (value) => {}){
+        this.serialController.messageCallback = callback;
+        this.read();
+    }
+
+    stopReading(){
+        this.serialController.stopReading();
     }
 
     blink(){
@@ -48,17 +58,12 @@ class ArduinoController {
 
     async pulseUp(callback = () => {}){
         if(!this.connected) return;
-        this.serialController.write("PULSE+!");
-        await this.serialController.read((value) => {
-            callback();
-        })
+        this.serialController.write("PULSE+0001!");
     }
+
     async pulseDown(callback = () => {}){
         if(!this.connected) return;
         this.serialController.write("PULSE-!");
-        await this.serialController.read((value) => {
-            callback();
-        })
     }
 }
 
@@ -69,6 +74,7 @@ class SerialController {
     lastValue;
     port;
     isReading;
+    messageCallback = (val) => {};
 
     async init() {
         if(this.port != null) return;
@@ -102,7 +108,8 @@ class SerialController {
         this.isReading = false;
     }
 
-    async read(onMessage, onFinished){
+    async read(onMessage = (val) => {}, onFinished = () => {}){
+        if(this.isReading) return;
         let keepReading = true;
         while (this.port.readable && keepReading) {
             const textDecoder = new TextDecoderStream();
@@ -121,15 +128,18 @@ class SerialController {
                     // Shoot an event
                     this.lastValue = value;
                     console.log(value);
-                    if(onMessage) onMessage(value);
+                    onMessage(value);
+                    this.messageCallback(value);
                     if(value == "DONE" || value == "TIME IS UP"){
                         break;
                     }
                 }
             } finally {
                 keepReading = false;
-                if (onFinished) onFinished();
+                this.isReading = false;
+                onFinished();
                 decodingReader.cancel();
+                decodingReader.releaseLock();
                 await readableStreamClosed.catch(() => { /* Ignore the error */ });
             }
         }
