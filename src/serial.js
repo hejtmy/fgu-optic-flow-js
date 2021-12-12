@@ -44,7 +44,7 @@ class ArduinoController {
 
     startReading(callback = (value) => {}){
         this.serialController.messageCallback = callback;
-        this.read();
+        this.serialController.read();
     }
 
     stopReading(){

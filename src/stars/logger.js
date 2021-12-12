@@ -26,6 +26,7 @@ const Logger = {
             this.data = data;
         }
     },
+    
     startLogging: function(){
 
     },
