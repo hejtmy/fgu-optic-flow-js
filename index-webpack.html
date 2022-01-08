@@ -4,22 +4,21 @@
     <body>
         <div id="setup">
             <div class="container-fluid">
-                <div class="row justify-content-md-center">
+                <div class="flex-row d-flex justify-content-center">
                     <div clas="col-4">
                         <input type="file" id="file-selector" accept=".json" class="btn btn-primary">
                         <button type="button" id="btn-start-experiment" class="btn btn-primary">Start</a>
                         <button type="button" id="arduino-connect-btn" class="btn btn-primary">Connect arduino</a>
                     </div>
                 </div>
-
-                <div class="row justify-content-md-center">
+                <div class="flex-row d-flex justify-content-md-center">
                     <div clas="col-4" id="setup-info"></div>
                 </div>
-                <div class="row justify-content-md-center">
+                <div class="flex-row d-flex justify-content-md-center">
                     <div clas="col-4" id="neuroduino-status-info">Neuroduino connected: false</div>
                     <button type="button" id="btn-neuroduino-blink" class="btn btn-primary" disabled>Try blink</button>
                 </div>
-                <div class="row justify-content-md-center">
+                <div class="flex-row d-flex justify-content-md-center">
                     <div class="col-2">
                         <button type="button" id="btn-clear-logs" class="btn btn-danger">Clear logs</button>
                     </div>
@@ -31,7 +30,7 @@
                         <button type="button" id="btn-save-log" class="btn btn-primary">Save</button>
                     </div>
                 </div>
-                <div class="row justify-content-md-center">
+                <div class="flex-row d-flex justify-content-md-center">
                     <div class="col-4">
                         <p id="p-log-content"></p>
                     </div>
