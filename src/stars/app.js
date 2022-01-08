@@ -13,7 +13,7 @@ let fileDropdown = document.getElementById("dropdown-save-files");
 let neuroduinoStatus = document.getElementById("neuroduino-status-info")
 let btnNeuroduinoBlink = document.getElementById("btn-neuroduino-blink")
 
-// BUTTONS -------------------
+// MAIN PAGE BUTTONS -------------------
 
 window.addEventListener('resize', function(event) {
     experiment.resize();
@@ -23,6 +23,7 @@ document.getElementById('btn-start-experiment').addEventListener("click", functi
     tryStartExperiment();
 });
 
+// EXPERIMENT BUTTONS -------------------------
 document.getElementById('btn-start-pause').addEventListener("click", function(e){
     experiment.startExperiment(finishExperiment);
     document.getElementById("experiment-buttons").style.display = "none";
@@ -33,6 +34,7 @@ document.getElementById('btn-back').addEventListener("click", function(e){
     goBackToMenu();
 });
 
+// NEURODUINO CONTROLS ------------------
 document.getElementById('arduino-connect-btn').addEventListener("click", function(e){
     connectNeuroduino();
 })
@@ -41,6 +43,7 @@ btnNeuroduinoBlink.addEventListener("click", () => {
     neuroduinoBlink();
 })
 
+// SETTINGS SELECTOR -----------------------
 document.getElementById('file-selector').addEventListener('change', (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -139,10 +142,9 @@ function populateDrowpdown(){
     const data = experiment.logger.getStorageData();
     console.log(data)
     if(data == null) return;
-    let i = 1;
-    Object.keys(data).forEach((e) => {
-        fileDropdown[i] = new Option(Date(e).toString(), e);
-        i++; 
+    Object.keys(data).forEach((e, i) => {
+        let date = new Date(parseInt(e)).toLocaleString("cs-CZ");
+        fileDropdown[i+1] = new Option(date, e);
     });
 }
 
