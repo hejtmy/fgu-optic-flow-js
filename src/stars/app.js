@@ -1,7 +1,8 @@
 import { OpticFlowExperiment, ExperimentSettings, TrialSettings } from './experiment.js';
 import basesettings from './settings/basesettings.js';
+import serial from './../serial.js';
 
-const arduinoController = new ArduinoController();
+const arduinoController = new serial.ArduinoController();
 let experiment = OpticFlowExperiment;
 
 var canvas = document.getElementById("space");
