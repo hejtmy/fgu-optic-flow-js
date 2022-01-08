@@ -4,7 +4,8 @@ const FlowDirection = Object.freeze({
     "radialout": 1,
     "horizontalleft": 2,
     "horizontalright": 3,
-    "random": 4
+    "random": 4,
+    "none": 5
 })
 
 const StarsController = {
@@ -132,7 +133,7 @@ initializeStars: function(canvas){
 },
 
 setFlowDirection: function(flowDirection){
-    if(flowDirection > 4 || flowDirection < 0){
+    if(flowDirection >= flowDirection.length || flowDirection < 0){
         flowDirection = 0;
     }
     this.OpticFlowSettings.CurrentFlowDirection = flowDirection;
@@ -150,6 +151,8 @@ moveStars: function(stars){
         case FlowDirection.horizontalright:
         case FlowDirection.horizontalleft:
             this.stars = this.moveHorizontal(stars, this.OpticFlowSettings.CurrentFlowDirection);
+            break;
+        case FlowDirection.none:
             break;
     }
 },
