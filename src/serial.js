@@ -145,3 +145,7 @@ class SerialController {
         }
     }
 }
+
+export default {
+    ArduinoController
+}
