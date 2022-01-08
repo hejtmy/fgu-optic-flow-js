@@ -1,0 +1,51 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <div id="setup">
+            <div class="container-fluid">
+                <div class="row justify-content-md-center">
+                    <div clas="col-4">
+                        <input type="file" id="file-selector" accept=".json" class="btn btn-primary">
+                        <button type="button" id="btn-start-experiment" class="btn btn-primary">Start</a>
+                        <button type="button" id="arduino-connect-btn" class="btn btn-primary">Connect arduino</a>
+                    </div>
+                </div>
+
+                <div class="row justify-content-md-center">
+                    <div clas="col-4" id="setup-info"></div>
+                </div>
+                <div class="row justify-content-md-center">
+                    <div clas="col-4" id="neuroduino-status-info">Neuroduino connected: false</div>
+                    <button type="button" id="btn-neuroduino-blink" class="btn btn-primary" disabled>Try blink</button>
+                </div>
+                <div class="row justify-content-md-center">
+                    <div class="col-2">
+                        <button type="button" id="btn-clear-logs" class="btn btn-danger">Clear logs</button>
+                    </div>
+                    <div class="col-4">
+                        <select class="form-control" id='dropdown-save-files' name='dropdown-save-files'>
+                        </select> 
+                    </div>
+                    <div class="col-2">
+                        <button type="button" id="btn-save-log" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+                <div class="row justify-content-md-center">
+                    <div class="col-4">
+                        <p id="p-log-content"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="experiment">
+            <div id="starsContainer">
+                <canvas id="space"></canvas>
+            </div>
+            <div class="row" id="experiment-buttons">
+                <a href="#" id="btn-start-pause" class="star-button">Start</a>
+                <a href="#" id="btn-back" class="star-button" style="left:30%">Back</a>
+            </div>
+        </div>
+    </body>
+</html>
