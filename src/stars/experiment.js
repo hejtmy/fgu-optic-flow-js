@@ -97,9 +97,9 @@ const OpticFlowExperiment = {
 
     pause: function(){
         this.state = ExpeirimentState.paused;
-        if(this.blinkTimeout != null) clearTimeout(this.blinkTimeout);
+        this.clearTimeouts();
         this.starsControler.hide();
-        this.starsControler.showMessage("Pauza. Stiskněte mezerník pro pokračování.");
+        this.starsControler.showMessage("Pauza. Stisknete mezernik pro pokracovani.");
     },
 
     resume: function(){
@@ -111,8 +111,11 @@ const OpticFlowExperiment = {
         this.running = false;
         this.starsControler.stop();
         this.logger.logMessage("experimentFinished");
-        if(this.blinkTimeout != null) clearTimeout(this.blinkTimeout);
+        this.clearTimeouts();
         if(this.finishCallback != null) this.finishCallback();
+
+        this.starsControler.hide();
+        this.starsControler.showMessage("Konec experimentu. Dekujeme vas cas.");
     },
 
     nextTrial: function(){
@@ -123,6 +126,9 @@ const OpticFlowExperiment = {
 
     startTrial: function(){
         console.log("trial starting" + this.iTrial);
+        this.clearTimeouts();
+
+        
         if(this.currentTrial.isPause){
             this.startPauseTrial();
             return;
@@ -159,9 +165,13 @@ const OpticFlowExperiment = {
             this.finishExperiment();
             return;
         }
+        this.clearTimeouts();
+        this.nextTrial();
+    },
+    
+    clearTimeouts: function(){
         if(this.trialTimeout != null) clearTimeout(this.trialTimeout);
         if(this.blinkTimeout != null) clearTimeout(this.blinkTimeout);
-        this.nextTrial();
     },
 
     checkLastTrial: function(iTrial){
