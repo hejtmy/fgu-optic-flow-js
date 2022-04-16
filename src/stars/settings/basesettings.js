@@ -7,6 +7,8 @@ export default {
     "trials":[
         {
             "duration": 1500,
+            "shouldBlink": true,
+            "blinkTime": 500,
             "movementType": 0
         },
         {
@@ -18,6 +20,8 @@ export default {
         },
         {
             "duration": 1500,
+            "shouldBlink": true,
+            "blinkTime": 400,
             "movementType": 2
         },
         {

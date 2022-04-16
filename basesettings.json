@@ -4,6 +4,7 @@
     "canvasSize":{"x":500, "y":500},
     "showSquare":true,
     "showCross":true,
+    "blinkDuration": 200,
     "trials":[
         {
             "duration": 1500,

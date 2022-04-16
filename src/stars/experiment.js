@@ -111,7 +111,7 @@ const OpticFlowExperiment = {
         this.running = false;
         this.starsControler.stop();
         this.logger.logMessage("experimentFinished");
-        if(this.blinkTimeout!=null) clearTimeout(this.blinkTimeout);
+        if(this.blinkTimeout != null) clearTimeout(this.blinkTimeout);
         if(this.finishCallback != null) this.finishCallback();
     },
 
@@ -214,7 +214,13 @@ const OpticFlowExperiment = {
 
     setNextBlink: function(){
         // 1+ is there because random is 1 exclusive, so we need to add one
-        let time = this.settings.blinkInterTrial[0] + Math.round(Math.random() * (1 + this.settings.blinkInterTrial[1] - this.settings.blinkInterTrial[0]));
+        if(!("shouldBlink" in this.currentTrial)) return;
+        if(!this.currentTrial.shouldBlink) return;
+        let time = this.settings.blinkInterTrial[0] + 
+            Math.round(Math.random() * (1 + this.settings.blinkInterTrial[1] - this.settings.blinkInterTrial[0]));
+        if("blinkTime" in this.currentTrial){
+            time = this.currentTrial.blinkTime;
+        }
         this.blinkTimeout = setTimeout(() => {
             this.blink();
         }, time);
@@ -238,11 +244,17 @@ const OpticFlowExperiment = {
 
         if(this.currentTrial.isPause){
             if(key.code == 'Space'){
-                this.resumePauseTrial();
+                this.tryUnpause();
                 return;
             }
         }
+    },
+
+    tryUnpause: function(){
+
+        this.resumePauseTrial();
     }
+
 }
 
 export {OpticFlowExperiment, ExperimentSettings, TrialSettings};
