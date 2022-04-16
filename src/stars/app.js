@@ -87,6 +87,8 @@ document.getElementById("btn-save-log").addEventListener('click', (e) => {
 });
 
 document.getElementById("btn-clear-logs").addEventListener('click', (e) => {
+    let confirmAction = confirm("Are you sure to delete all logs?");
+    if(!confirmAction) return; 
     experiment.logger.clearStorage();
     populateDrowpdown();
 });
