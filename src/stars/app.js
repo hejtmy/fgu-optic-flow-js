@@ -105,9 +105,14 @@ function tryStartExperiment(){
         alert("Experiment not initialized. Load settings first");
         return;
     }
+    let arduinoConfirmed = false;
     if(arduinoController.connected){
         experiment.initNeuroduino(arduinoController);
+        arduinoConfirmed = true;
+    } else {
+        arduinoConfirmed = confirm("Arduino not connected, do you want to condinue?");
     }
+    if(!arduinoConfirmed) return;
     setupWindow.style.display = "none";
     experimentWindow.style.display = "block";
 }
