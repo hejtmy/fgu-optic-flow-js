@@ -270,7 +270,6 @@ drawStars2: function(stars, spaceDepth, starSize){
         this.c.fillStyle = "rgba(209, 255, 255, " + star.o + ")";
     }
 }
-
 }
 
 // EXECUTE ----------------------

@@ -148,7 +148,6 @@ function setInfoText(setupInfo, experiment){
 function populateDrowpdown(){
     fileDropdown[0] = new Option('', '');
     const data = experiment.logger.getStorageData();
-    console.log(data)
     if(data == null) return;
     Object.keys(data).forEach((e, i) => {
         let date = new Date(parseInt(e)).toLocaleString("cs-CZ");
