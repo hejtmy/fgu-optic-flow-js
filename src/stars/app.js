@@ -96,6 +96,7 @@ document.getElementById("btn-clear-logs").addEventListener('click', (e) => {
 document.addEventListener('keydown', handleKey);
 
 // FUNCTIONS ---------------
+
 function handleKey(key){
     experiment.handleKey(key);
 }

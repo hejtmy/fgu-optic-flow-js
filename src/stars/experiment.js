@@ -127,18 +127,19 @@ const OpticFlowExperiment = {
     startTrial: function(){
         console.log("trial starting" + this.iTrial);
         this.clearTimeouts();
-
         
         if(this.currentTrial.isPause){
             this.startPauseTrial();
             return;
         }
+        
         //setup stars controller
         this.starsControler.setFlowDirection(this.currentTrial.movementType);
         this.logger.logMessage(`trialStarted;${this.iTrial}`);
         this.trialTimeout = setTimeout(() => {
             this.finishTrial();
         }, this.currentTrial.duration);
+
         this.setNextBlink();
         this.neuroduinoPulse();
     },
@@ -261,7 +262,6 @@ const OpticFlowExperiment = {
     },
 
     tryUnpause: function(){
-
         this.resumePauseTrial();
     }
 
