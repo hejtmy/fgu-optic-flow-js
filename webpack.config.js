@@ -6,7 +6,7 @@ module.exports = {
     entry: {
         bootstrap: './src/bootstrap-loader.js',
         //serial: './src/serial.js',
-        app: './src/stars/app.js',
+        app: './src/pages/app.js',
         //app: { dependOn: 'serial', import: './src/stars/app.js' },
     },
     module:{
@@ -18,5 +18,5 @@ module.exports = {
         path: path.resolve(__dirname, './dist'),
         //filename: 'index_bundle.js',
     },
-    plugins: [new HtmlWebpackPlugin({ template: './index-webpack.html' })],
+    plugins: [new HtmlWebpackPlugin({ template: './experiment-webpack.html' })],
 };

@@ -62,13 +62,13 @@
         </div>
 		<script type="module">
 
-			import * as THREE from './src/three.module.js';
-            import getRandomStarField from './src/starfield.js';
-			import Stats from './src/stats.module.js';
+			import * as THREE from './src/three/three.module.js';
+            import getRandomStarField from './src/three/starfield.js';
+			import Stats from './src/three/stats.module.js';
 
-            import { BufferGeometryUtils } from './src/BufferGeometryUtils.js';
+            import { BufferGeometryUtils } from './src/three/BufferGeometryUtils.js';
             
-            import { GUI } from './src/dat.gui.module.js';
+            import { GUI } from './src/three/dat.gui.module.js';
 
             class Trial{
                 constructor(start, goal1, goal2, decoy){

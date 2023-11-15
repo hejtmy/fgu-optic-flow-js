@@ -1,5 +1,5 @@
-import { StarsController } from './stars.js';
-import basesettings from './settings/basesettings.js';
+import { StarsController } from '../stars/stars.js';
+import basesettings from '../stars/settings/basesettings.js';
 
 let starsController = Object.create(StarsController);
 
