@@ -1,6 +1,6 @@
-import { OpticFlowExperiment, ExperimentSettings, TrialSettings } from './experiment.js';
-import basesettings from './settings/basesettings.js';
-import serial from './../serial.js';
+import { OpticFlowExperiment, ExperimentSettings, TrialSettings } from '../stars/experiment.js';
+import basesettings from '../stars/settings/basesettings.js';
+import serial from '../serial.js';
 
 const arduinoController = new serial.ArduinoController();
 let experiment = OpticFlowExperiment;

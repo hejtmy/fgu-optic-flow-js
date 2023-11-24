@@ -16,6 +16,14 @@ const TrialSettings = {
     automaticContinue: true
 }
 
+const PauseTrialSettings = {
+    isPause: true,
+    message: "Toto je pauza <br>. Máte za sebou {TrialNumber} z {TotalTrials}. <br> Vaše výsledky ",
+    // available terms
+    // TrialNumber, TotalTrials
+    // correct, incorrect, ratio_correct, average_rt, min_rt, max_rt
+}
+
 const ExperimentSettings = {
     name: "NULL",
     version: "1.0",
@@ -61,7 +69,6 @@ const OpticFlowExperiment = {
 
     initLogger: function(){
     },
-
 
     resize: function(){
         this.starsControler.resize();
@@ -185,7 +192,6 @@ const OpticFlowExperiment = {
     },
 
     // NEURODUINO ---------------------------
-
     initNeuroduino: function(neuroduino){
         if(!neuroduino.connected){
             console.warn("the neuroduino needs to be connected");
@@ -205,7 +211,7 @@ const OpticFlowExperiment = {
         }, 200);
     },
 
-    neuroduinoHandleMessage(value){
+    neuroduinoHandleMessage: function(value){
         this.logger.logMessage(`neuroduinoMessage;${value}`);
     },
 

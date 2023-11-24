@@ -16,6 +16,7 @@ class LineBreakTransformer {
 }
 
 class ArduinoController {
+    
     serialController;
     connected;
     messageCallback;
