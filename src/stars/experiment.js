@@ -1,8 +1,9 @@
 import { StarsController, FlowDirection } from "./stars.js";
 import Logger from "./logger.js";
+import {TrialData, ExperimentData} from "./results.js";
 
 const ExpeirimentState = Object.freeze({
-    "none":-1,
+    "none": -1,
     "initialized": 0,
     "running": 1,
     "paused": 2,
@@ -18,7 +19,6 @@ const TrialSettings = {
 
 const PauseTrialSettings = {
     isPause: true,
-    message: "Toto je pauza <br>. Máte za sebou {TrialNumber} z {TotalTrials}. <br> Vaše výsledky ",
     // available terms
     // TrialNumber, TotalTrials
     // correct, incorrect, ratio_correct, average_rt, min_rt, max_rt
@@ -31,6 +31,9 @@ const ExperimentSettings = {
     canvasSize: {x:300, y:300},
     blinkDuration: 200,
     blinkInterTrial: [800, 1200],
+    pauseSettings: {
+        msg: "Toto je pauza <br>. Máte za sebou {TrialNumber} z {TotalTrials}.",
+    },
     trials: [],
 }
 
@@ -49,6 +52,8 @@ const OpticFlowExperiment = {
     finishCallback: null,
     canvas: null,
     state: ExpeirimentState.none,
+    currentTrialData: null,
+    data: null,
     
     init: function(settingsObj, canvas){
         this.settings = this.parseSettings(settingsObj);
@@ -64,6 +69,7 @@ const OpticFlowExperiment = {
         this.canvas = canvas;
         this.resize(this.canvas);
 
+        this.data = Object.create(ExperimentData);
         this.state = ExpeirimentState.initialized;
     },
 
@@ -106,7 +112,25 @@ const OpticFlowExperiment = {
         this.state = ExpeirimentState.paused;
         this.clearTimeouts();
         this.starsControler.hide();
-        this.starsControler.showMessage("Pauza. Stisknete mezernik pro pokracovani.");
+        let inject = (str, obj) => str.replace(/{(.*?)}/g, (x, g) => obj[g]);
+        let pauseData = getPauseData();
+        let msg = inject(this.currentTrial.message, pauseData);
+        this.starsControler.showMessage(msg); 
+    },
+
+    getPauseData: function(){
+        let trialStats = this.data.calculateStats();
+        let pauseData = {
+            TrialNumber: this.iTrial,
+            TotalTrials: this.settings.trials.length,
+            correct: trialStats.correct,
+            incorrect: trialStats.incorrect,
+            ratio_correct: trialStats.ratio_correct,
+            average_rt: trialStats.average_rt,
+            min_rt: trialStats.min_rt,
+            max_rt: trialStats.max_rt,
+        }
+        return pauseData;
     },
 
     resume: function(){
@@ -134,6 +158,7 @@ const OpticFlowExperiment = {
     startTrial: function(){
         console.log("trial starting" + this.iTrial);
         this.clearTimeouts();
+        this.currentTrialData = Object.create(TrialData);
         
         if(this.currentTrial.isPause){
             this.startPauseTrial();

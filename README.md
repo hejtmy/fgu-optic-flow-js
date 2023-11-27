@@ -23,6 +23,9 @@ Any valid keypress is Spacebar. It reacts to keys and unpauses the experiemnt du
     "showSquare": true,
     "blinkInterTrial": [800, 1200], // in case we want blink trials to be randomized
     "showCross": true, //should there be a fixation cross at all time
+    "pauseSettings": { //settings for pause trials
+        "msg": "Press spacebar to continue", //message to be displayed. See below for formatting
+    },
     "trials":[
         {
             "duration": 1500, //duration in ms. Overrides base duration
@@ -31,7 +34,7 @@ Any valid keypress is Spacebar. It reacts to keys and unpauses the experiemnt du
             "blinkTime": 400 // in ms, when the blink should start
         },
         {
-            "isPause": true // if true, starts pause trial
+            "isPause": true // if true, starts pause trial,
         },
         {
             // this trial will not blink
@@ -41,6 +44,7 @@ Any valid keypress is Spacebar. It reacts to keys and unpauses the experiemnt du
     ]
 }
 ```
+
 **Inheritance** Any top level settings (showSquare, showCross, duration etc.) are defaults and do not need to be set individually in each trial.  If trial has duration 1500 it will override the default. 
 **Timings** Duration determines trial duration, blinkDuration the time of the blink. All times are in milliseconds. 
 **Blinking** If the trial should blink, it needs to set property "shouldBlink" to true. If blink should occur at designated time, "blinkTime" in ms should be set. DO NOT forget blink duration. If trial is 1000ms long and blink time 200, do NOT start blink later than 750ms or so, otherwise the blink might be cut short etc.. Keypress is not linked to any specific blink,
@@ -55,6 +59,20 @@ Movement type
 - 3: horizontal right
 - 4: random
 - 5: none (still)
+
+### Pause settings
+
+Pause settings allow for customization of the message. It allows display of concurent trial stats by string interpolation/comprehension. The string is constructed using Html formatting (<br>, <p> should work) and `{variable name}` to insert variables (do not use basic javascript interpolation (using `${variable name}`), it will not work).
+
+The available variables are:
+- trial: current trial number
+- totalTrials: total number of trials
+
+```json
+{
+    "msg": "Press spacebar to continue. Trial ${trial} of ${totalTrials}."
+}
+```
 
 ## Tuts
 https://dev.to/unjavascripter/the-amazing-powers-of-the-web-web-serial-api-3ilc
