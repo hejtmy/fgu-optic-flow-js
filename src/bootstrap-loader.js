@@ -6,4 +6,4 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import style from './css/style.css';
+import style from '../public/css/style.css';

@@ -18,5 +18,5 @@ module.exports = {
         path: path.resolve(__dirname, './dist'),
         //filename: 'index_bundle.js',
     },
-    plugins: [new HtmlWebpackPlugin({ template: './experiment-webpack.html' })],
+    plugins: [new HtmlWebpackPlugin({ template: path.resolve(__dirname, './public/experiment-webpack.html')})],
 };
