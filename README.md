@@ -68,17 +68,16 @@ Pause settings allow for customization of the message. It allows display of conc
 The available variables are:
 - TrialNumber: Current trial number
 - TotalTrials: Number of total trials
-Correct: 999,
-    Incorrect: 999,
-    RatioCorrect: 999,
-    AverageReactionTime: 999,
-    MinimalReactionTime: 999,
-    MaximalReactionTime: 999,
-
+- Correct: Number of correct trials
+- Incorrect: Number of incorrect trials
+- RatioCorrect: Ratio of correct trials
+- AverageReactionTime: Average reaction time for correct trials
+- MinimalReactionTime: Fastest reaction time for correct trials
+- MaximalReactionTime: Slowest reaction time for correct trials
 
 ```json
 {
-    "msg": "Press spacebar to continue. Trial ${trial} of ${totalTrials}."
+    "pauseMessage": "Press spacebar to continue. Trial ${trial} of ${totalTrials}."
 }
 ```
 
