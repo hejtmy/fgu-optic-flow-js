@@ -1,7 +1,7 @@
+
 import { StarsController } from '../stars/stars.js';
 
 let starsController = Object.create(StarsController);
-
 var canvas = document.getElementById("space");
 let experimentWindow = document.getElementById("experiment");
 
@@ -39,7 +39,10 @@ document.getElementById('btn-showhide').addEventListener('click', function(e){
 
 // Message showing  --------
 document.getElementById('btn-message').addEventListener('click', function(e){
-    starsController.showMessage("MESSAGE");
+    starsController.hide();
+    //get message from input field
+    let message = document.getElementById('input-message').value;
+    starsController.showMessage(message);
 })
 
 // Selecting movement ---------
@@ -47,6 +50,7 @@ document.getElementById('btn-message').addEventListener('click', function(e){
 // if a button inside element btn-group-movement is clicked display console message
 document.getElementById('btn-group-movement').addEventListener('click', function(e){
     console.log(e.target.innerHTML);
+    starsController.show();
     starsController.setFlowDirection(Number(e.target.value));
 })
 
