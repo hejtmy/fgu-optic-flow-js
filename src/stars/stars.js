@@ -1,5 +1,5 @@
 import '../canvas-txt.js';
-const { drawText, getTextHeight, splitText } = window.canvasTxt;
+const { drawText } = window.canvasTxt;
 
 //DEFINITIONS ----
 const FlowDirection = Object.freeze({
@@ -50,6 +50,7 @@ const StarsController = {
     initialize: function(canvas, window){
         this.canvas = canvas;
         this.c = canvas.getContext('2d');
+        this.c.scale(2,2);
         this.focalLength = canvas.width * 2;
         this.window = window;
         this.stars = this.initializeStars(canvas);
@@ -87,7 +88,7 @@ const StarsController = {
             width:400, height: 300, x: xa-200, y: ya-150, 
             fontSize: 24, align: 'center'});
         //this.c.fillText(message, x, y);
-    }
+    },
 
     clearMessage: function(){
 
@@ -134,8 +135,8 @@ const StarsController = {
             }
             this.resetStar(star, 0, 1, canvas);
             stars.push(star);
-    }
-    return stars;
+        }
+        return stars;
     },
 
     setFlowDirection: function(flowDirection){
@@ -238,7 +239,6 @@ const StarsController = {
     },
 
     drawCentralSquare: function(context, canvas, centralArea){
-        // vertical
         context.fillStyle = "#000000";
         context.fillRect(canvas.width/2 - centralArea.width/2, canvas.height/2 - centralArea.height/2, centralArea.width, centralArea.height);
     },
