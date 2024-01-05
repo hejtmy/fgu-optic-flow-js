@@ -34,6 +34,6 @@ const ExperimentData = {
     }
 }
 
-export default {
+export {
     ExperimentData, TrialData
 }
