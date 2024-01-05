@@ -4,6 +4,10 @@ export default {
     "canvasSize":{"x":500, "y":500},
     "showSquare":false,
     "showCross":true,
+    "requireArduino":false,
+    "pauseSettings": { //settings for pause trials
+        "message": "Press spacebar to continue", //message to be displayed. See below for formatting
+    },
     "trials":[
         {
             "duration": 1500,
@@ -16,7 +20,7 @@ export default {
             "movementType": 1
         },
         {
-            "isPause": true
+            "isPause": true,
         },
         {
             "duration": 1500,
