@@ -5,51 +5,50 @@
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
     </head>
-    <body>
-        <body class="text-center clickup-chrome-ext_installed" data-new-gr-c-s-check-loaded="14.1148.0" data-gr-ext-installed="">
-    <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
-        <header class="masthead mb-auto">
-            <div class="inner">
-                <h3 class="masthead-brand"><a href="../index.html">Optic flow experiment</a></h3>
-            </div>
-        </header>
-        <main role="main" class="inner cover">
-            <div id="setup">
-                <div class="container-fluid">
-                    <div class="row justify-content-md-center">
-                        <button type="button" id="btn-startstop" class="btn btn-primary">Start/Stop</a></button>
-                        <button type="button" id="btn-blink" class="btn btn-primary">Blink</a></button>
-                        <button type="button" id="btn-showhide" class="btn btn-primary">Show/Hide</a></button>
-                    </div>
-                    <div class="row justify-content-md-center">
-                        <div class="btn-group" id="btn-group-movement" role="group" aria-label="Select movement type">
-                            <button type="button" value=0 class="btn btn-secondary">Radial in</button>
-                            <button type="button" value=1 class="btn btn-secondary">Radial out</button>
-                            <button type="button" value=2 class="btn btn-secondary">Horizontal left</button>
-                            <button type="button" value=3 class="btn btn-secondary">Horizontal right</button>
-                            <button type="button" value=4 class="btn btn-secondary">Random</button>
-                            <button type="button" value=5 class="btn btn-secondary">None</button>
+    <body class="text-center clickup-chrome-ext_installed">
+        <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
+            <header class="masthead mb-auto">
+                <div class="inner">
+                    <h3 class="masthead-brand"><a href="../index.html">Optic flow experiment</a></h3>
+                </div>
+            </header>
+            <main role="main" class="inner cover">
+                <div id="setup">
+                    <div class="container-fluid">
+                        <div class="row justify-content-md-center">
+                            <button type="button" id="btn-startstop" class="btn btn-primary">Start/Stop</a></button>
+                            <button type="button" id="btn-blink" class="btn btn-primary">Blink</a></button>
+                            <button type="button" id="btn-showhide" class="btn btn-primary">Show/Hide</a></button>
                         </div>
-                    </div>
-                    <div class="row justify-content-md-center">
-                        <div class="col-auto">
-                            <a type="button" id="btn-message" class="btn btn-primary">Message</a>
+                        <div class="row justify-content-md-center">
+                            <div class="btn-group" id="btn-group-movement" role="group" aria-label="Select movement type">
+                                <button type="button" value=0 class="btn btn-secondary">Radial in</button>
+                                <button type="button" value=1 class="btn btn-secondary">Radial out</button>
+                                <button type="button" value=2 class="btn btn-secondary">Horizontal left</button>
+                                <button type="button" value=3 class="btn btn-secondary">Horizontal right</button>
+                                <button type="button" value=4 class="btn btn-secondary">Random</button>
+                                <button type="button" value=5 class="btn btn-secondary">None</button>
+                            </div>
                         </div>
-                        <div class="col-md-8">
-                            <input type="text" id="input-message" class="form-control" placeholder="Message" aria-label="Message" value="Message text to test out" aria-describedby="basic-addon1"/>
+                        <div class="row justify-content-md-center">
+                            <div class="col-auto">
+                                <a type="button" id="btn-message" class="btn btn-primary">Message</a>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" id="input-message" class="form-control" placeholder="Message" aria-label="Message" value="Message text to test out" aria-describedby="basic-addon1"/>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row justify-content-md-center">
+                        <div class="row justify-content-md-center">
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div id="experiment">
-                <div id="starsContainer">
-                    <canvas id="space"></canvas>
+                <div id="experiment">
+                    <div id="starsContainer">
+                        <canvas id="space"></canvas>
+                    </div>
                 </div>
-            </div>
-        </main>
-        <script src="../src/serial.js"></script>
+            </main>
+        </div>
         <script type="module" src='../src/pages/stars-visualiser.js'></script>
     </body>
 </html>
