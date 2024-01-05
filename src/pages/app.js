@@ -9,7 +9,7 @@ var canvas = document.getElementById("space");
 let setupWindow = document.getElementById("setup");
 let experimentWindow = document.getElementById("experiment");
 let setupInfo = document.getElementById("setup-info");
-let fileDropdown = document.getElementById('file-selector');
+let fileDropdown = document.getElementById('dropdown-save-files');
 let neuroduinoStatus = document.getElementById("neuroduino-status-info")
 
 // MAIN PAGE BUTTONS -------------------
@@ -44,7 +44,7 @@ document.getElementById("btn-neuroduino-blink").addEventListener("click", () => 
 })
 
 // SETTINGS SELECTOR -----------------------
-fileDropdown.addEventListener('change', (event) => {
+document.getElementById("file-selector").addEventListener('change', (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.addEventListener('load', (event) => {
@@ -57,7 +57,7 @@ fileDropdown.addEventListener('change', (event) => {
 });
 
 // LOG FILES HANDELING ---------------------
-document.getElementById("dropdown-save-files").addEventListener('change', (e) => {
+fileDropdown.addEventListener('change', (e) => {
     console.log(e.target.value);
     var data = experiment.logger.getExperimentData(e.target.value);
     var txt = '';
