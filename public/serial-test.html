@@ -1,85 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web Serial</title>
-  <style>
-    .repo-link {
-      position: fixed;
-      bottom: 0;
-      right: 0;
-      margin: 0 1rem 1rem 0;
-    }
-  </style>
-</head>
-<body>
-  <button id="connect-btn">Connect arduino</button>
-  <button id="blink-btn">Blink</button>
-  <button id="pulseup-btn">Pulse up</button>
-  <button id="pulsedown-btn">Pulse down</button>
-  <button id="get-serial-messages">Get serial messages</button>
-  <div>
-    <form id="message-form">
-      <input type="text" id="message-input" disabled="true">
-      <button type="submit" id="submit-button" disabled="true">Send</button>
-    </form>
-  </div>
-  <div id="serial-messages-container"></div>
-
-  <script src="../src/serial.js"></script>
-  <script>
-    const arduinoController = new ArduinoController();
-    const getSerialMessages = document.getElementById('get-serial-messages');
-    const messageForm = document.getElementById('message-form');
-    const messageInput = document.getElementById('message-input');
-    const submitButton = document.getElementById('submit-button');
-    const connectButton = document.getElementById('connect-btn');
-    const serialMessagesContainer = document.getElementById('serial-messages-container');
-
-    messageForm.addEventListener('submit', event => {
-        event.preventDefault();
-        arduinoController.serialController.write(event.target.firstElementChild.value);
-        getSerialMessage();
-    });
-
-    getSerialMessages.addEventListener('pointerdown', async () => {
-        getSerialMessage();
-    });
-
-    document.getElementById('blink-btn').addEventListener('click', async () => {
-      arduinoController.blink();
-    });
-    
-    document.getElementById('pulseup-btn').addEventListener('click', async () => {
-        let timestamp = new Date().getTime();
-        console.log(timestamp);
-        arduinoController.pulseUp(callback = () => {
-            let endTimestamp = new Date().getTime();
-            console.log("returned in " + (endTimestamp - timestamp) + "ms");
-        });
-    });
-
-    document.getElementById('pulsedown-btn').addEventListener('click', async () => {
-        arduinoController.pulseDown();
-    });
-
-    async function getSerialMessage() {
-        await arduinoController.serialController.read() + '\n';
-        serialMessagesContainer.innerText += arduinoController.serialController.lastValue + "\n";
-    }
-
-    connectButton.addEventListener('click', async () => {
-        var connected = await arduinoController.connect();
-        console.log("ahsit");
-        console.log(connected);
-        if(connected){
-            connectButton.innerHTML = "Disconnect";
-            serialMessagesContainer.removeAttribute('disabled');
-            messageInput.removeAttribute('disabled');
-            submitButton.removeAttribute('disabled');
-        }
-    })
-  </script>
-</body>
+<html>
+    <head>
+        <script src="css/js/jquery.min.js"></script>
+        <script src="css/js/bootstrap.bundle.min.js"></script>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body class="text-center clickup-chrome-ext_installed">
+        <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
+            <header class="masthead">
+                <div class="inner">
+                    <h3 class="masthead-brand"><a href="../index.html">Optic flow experiment</a></h3>
+                </div>
+            </header>
+            <main role="main" class="inner cover">
+                <div id="setup">
+                  <div class="container-fluid mt-5">
+                    <div class="container justify-content-md-center">
+                      <button class="btn" id="connect-btn">Connect arduino</button>
+                    </div>
+                    <div class="container justify-content-md-center mt-4">
+                      <button class="btn" id="blink-btn">Blink</button>
+                      <button class="btn" id="pulseup-btn">Pulse up</button>
+                      <button class="btn" id="pulsedown-btn">Pulse down</button>
+                      <button class="btn" id="get-serial-messages">Get serial messages</button>
+                    </div>
+                    <div class="container justify-content-md-center mt-4">
+                        <form id="message-form">
+                          <input type="text" id="message-input" disabled="true">
+                          <button type="submit" id="submit-button" disabled="true">Send</button>
+                        </form>
+                      <div id="serial-messages-container"></div>
+                    </div>
+                  </div>
+                </div>
+            </main>
+        </div>
+      <script type="module" src='../src/pages/arduino-tester.js'></script>
+    </body>
 </html>
