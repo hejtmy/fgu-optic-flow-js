@@ -42,9 +42,8 @@ const ExperimentSettings = {
     canvasSize: {x:300, y:300},
     blinkDuration: 200,
     blinkInterTrial: [800, 1200],
-    pauseSettings: {
-        msg: "Toto je pauza <br>. Máte za sebou {TrialNumber} z {TotalTrials}.",
-    },
+    pauseMessage: "Máte za sebou {TrialNumber} z {TotalTrials}.",
+    finalMessage: "Konec experimentu. Dekujeme za váš čas.",
     trials: [],
 }
 

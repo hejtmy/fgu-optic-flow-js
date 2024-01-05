@@ -5,9 +5,7 @@ export default {
     "showSquare":false,
     "showCross":true,
     "requireArduino":false,
-    "pauseSettings": { //settings for pause trials
-        "message": "Press spacebar to continue", //message to be displayed. See below for formatting
-    },
+    "pauseMessage": "You have completed {TrialNumber} out of {TotalTrials}. Press Spacebar to continue", //message to be displayed. See below for formatting
     "trials":[
         {
             "duration": 1500,

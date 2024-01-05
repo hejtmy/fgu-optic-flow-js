@@ -23,8 +23,9 @@ Any valid keypress is Spacebar. It reacts to keys and unpauses the experiemnt du
     "showSquare": true,
     "blinkInterTrial": [800, 1200], // in case we want blink trials to be randomized
     "showCross": true, //should there be a fixation cross at all time
-    "pauseSettings": { //settings for pause trials
-        "msg": "Press spacebar to continue", //message to be displayed. See below for formatting
+    "requireArduino": true, //if user is warned if arduino is not present. Can still continue, false just disables the warning
+    "pauseMessage": "Press spacebar to continue", //message to be displayed. See below for formatting and options to 
+    "finalMessage": "Thank you for your time", //message at the end of the experiment. allows same formatting as pauseMessage
     },
     "trials":[
         {
@@ -65,8 +66,15 @@ Movement type
 Pause settings allow for customization of the message. It allows display of concurent trial stats by string interpolation/comprehension. The string is constructed using Html formatting (<br>, <p> should work) and `{variable name}` to insert variables (do not use basic javascript interpolation (using `${variable name}`), it will not work).
 
 The available variables are:
-- trial: current trial number
-- totalTrials: total number of trials
+- TrialNumber: Current trial number
+- TotalTrials: Number of total trials
+Correct: 999,
+    Incorrect: 999,
+    RatioCorrect: 999,
+    AverageReactionTime: 999,
+    MinimalReactionTime: 999,
+    MaximalReactionTime: 999,
+
 
 ```json
 {
