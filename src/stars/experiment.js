@@ -2,6 +2,17 @@ import { StarsController, FlowDirection } from "./stars.js";
 import Logger from "./logger.js";
 import {TrialData, ExperimentData} from "./results.js";
 
+const PauseData = {
+    TrialNumber: 666,
+    TotalTrials: 666,
+    Correct: 999,
+    Incorrect: 999,
+    RatioCorrect: 999,
+    AverageReactionTime: 999,
+    MinimalReactionTime: 999,
+    MaximalReactionTime: 999,
+}
+
 const ExpeirimentState = Object.freeze({
     "none": -1,
     "initialized": 0,
@@ -112,24 +123,24 @@ const OpticFlowExperiment = {
         this.state = ExpeirimentState.paused;
         this.clearTimeouts();
         this.starsControler.hide();
+        let pauseData = this.getPauseData();
         let inject = (str, obj) => str.replace(/{(.*?)}/g, (x, g) => obj[g]);
-        let pauseData = getPauseData();
-        let msg = inject(this.currentTrial.message, pauseData);
+        let msg = inject(this.setttings.pauseSettings.message, pauseData);
+        console.log(msg);
         this.starsControler.showMessage(msg); 
     },
 
     getPauseData: function(){
         let trialStats = this.data.calculateStats();
-        let pauseData = {
-            TrialNumber: this.iTrial,
-            TotalTrials: this.settings.trials.length,
-            correct: trialStats.correct,
-            incorrect: trialStats.incorrect,
-            ratio_correct: trialStats.ratio_correct,
-            average_rt: trialStats.average_rt,
-            min_rt: trialStats.min_rt,
-            max_rt: trialStats.max_rt,
-        }
+        let pauseData = Object.create(PauseData);
+        pauseData.TrialNumber = this.iTrial;
+        pauseData.TotalTrials = this.settings.trials.length;
+        pauseData.Correct = trialStats.correct;
+        pauseData.Incorrect = trialStats.incorrect;
+        pauseData.RatioCorrect = trialStats.ratio_correct;
+        pauseData.AverageReactionTime = trialStats.average_rt;
+        pauseData.MinimalReactionTime = trialStats.min_rt;
+        pauseData.MaximalReactionTime = trialStats.max_rt;
         return pauseData;
     },
 
@@ -298,4 +309,4 @@ const OpticFlowExperiment = {
 
 }
 
-export {OpticFlowExperiment, ExperimentSettings, TrialSettings};
+export {OpticFlowExperiment, ExperimentSettings, TrialSettings, PauseData};
