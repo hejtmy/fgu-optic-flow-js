@@ -1,6 +1,7 @@
 import { StarsController, FlowDirection } from "./stars.js";
 import Logger from "./logger.js";
 import {TrialData, ExperimentData} from "./results.js";
+import {injectMessage} from "../utils.js";
 
 const PauseData = {
     TrialNumber: 666,
@@ -123,9 +124,9 @@ const OpticFlowExperiment = {
         this.clearTimeouts();
         this.starsControler.hide();
         let pauseData = this.getPauseData();
-        let inject = (str, obj) => str.replace(/{(.*?)}/g, (x, g) => obj[g]);
-        let msg = inject(this.setttings.pauseSettings.message, pauseData);
-        console.log(msg);
+        console.log(this.settings.pauseMessage);
+        let pauseMessage = this.settings.pauseMessage;
+        let msg = injectMessage(pauseMessage, pauseData);
         this.starsControler.showMessage(msg); 
     },
 
@@ -156,7 +157,9 @@ const OpticFlowExperiment = {
         if(this.finishCallback != null) this.finishCallback();
 
         this.starsControler.hide();
-        this.starsControler.showMessage("Konec experimentu. Dekujeme vas cas.");
+        let finalMesasge = this.settings.finalMessage;
+        let msg = injectMessage(finalMesasge, this.getPauseData());
+        this.starsControler.showMessage(msg);
     },
 
     nextTrial: function(){
