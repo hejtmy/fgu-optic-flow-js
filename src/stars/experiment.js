@@ -132,7 +132,7 @@ const OpticFlowExperiment = {
 
     getPauseData: function(){
         let trialStats = this.data.calculateStats();
-        let pauseData = Object.create(PauseData);
+        let pauseData =  Object.create(PauseData);
         pauseData.TrialNumber = this.iTrial;
         pauseData.TotalTrials = this.settings.trials.length;
         pauseData.Correct = trialStats.correct;
@@ -172,8 +172,10 @@ const OpticFlowExperiment = {
         console.log("trial starting" + this.iTrial);
         this.clearTimeouts();
         this.currentTrialData = Object.create(TrialData);
-        
+        this.currentTrialData.trialNumber = this.iTrial;
+
         if(this.currentTrial.isPause){
+            this.currentTrialData.isPause = true;
             this.startPauseTrial();
             return;
         }
@@ -192,6 +194,7 @@ const OpticFlowExperiment = {
     startPauseTrial: function(){
         this.pause();
         this.logger.logMessage(`trialStarted;${this.iTrial}`);
+        // else continues with a spacebar
         if(this.currentTrial.automaticContinue) {
             this.trialTimeout = setTimeout(() => {
                 this.resumePauseTrial();
@@ -206,6 +209,7 @@ const OpticFlowExperiment = {
     },
 
     finishTrial: function(){
+        this.data.addTrialData(this.currentTrialData);
         this.logger.logMessage(`trialFinished;${this.iTrial}`);
         if(this.checkLastTrial(this.iTrial, this.settings)){
             this.finishExperiment();
@@ -224,9 +228,13 @@ const OpticFlowExperiment = {
         return this.iTrial >= this.settings.trials.length - 1;
     },
 
+    tryUnpause: function(){
+        this.resumePauseTrial();
+    },
+
     // MESSAGES -------------------------------
     showMessage: function(message){
-
+        this.starsControler.showMessage(message);
     },
 
     // NEURODUINO ---------------------------
@@ -260,11 +268,13 @@ const OpticFlowExperiment = {
             finishCallback();
         });
         this.logger.logMessage(`blinkStarted;`);
+        this.currentTrialData.didBlink = true;
+        this.currentTrialData.blinkStartedTime = this.logger.getTime();
     },
     
     finishBlink: function(){
-        //log blink
         this.logger.logMessage(`blinkFinished;`);
+        this.currentTrialData.blinkEndedTime = this.logger.getTime();
     },
 
     setNextBlink: function(){
@@ -281,6 +291,7 @@ const OpticFlowExperiment = {
         }, time);
     },
 
+    // key handling -----------------------------
     handleKey: function(key){
         if(this.state < ExpeirimentState.running | 
             this.state >= ExperimentSettings.finished) return;
@@ -288,27 +299,30 @@ const OpticFlowExperiment = {
 
         // Logging ---------------------------
         this.logger.logMessage(`keypress;${key.code}`);
-
-        // Handles Pause
-        if(key.code == 'Escape'){
-            //this.pause();
-            return;
-        }
+        
+        // Handles participant reaction with a spacebar -------------------
+        this.handleTrialSpacebar(key);
 
         // Handles resuming trials with a spacebar ------------
+        if(this.handlePauseKey(key)) return;
+    },
 
+    handlePauseKey: function(key){
         if(this.currentTrial.isPause){
             if(key.code == 'Space'){
                 this.tryUnpause();
-                return;
+                return true;
             }
         }
+        return false;
     },
-
-    tryUnpause: function(){
-        this.resumePauseTrial();
+    
+    handleTrialSpacebar: function(key) {
+        if(key.code != 'Space') return false;
+        if(this.currentTrial.isPause) return false;
+        this.currentTrialData.didRespond = true;
+        this.currentTrialData.responseTime = this.logger.getTime();
     }
-
 }
 
 export {OpticFlowExperiment, ExperimentSettings, TrialSettings, PauseData};

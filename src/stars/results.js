@@ -1,25 +1,54 @@
+const TrialResults = {
+    trialNumber: null,
+    responseCorrect: null,
+    reactionTime: null,
+    result: null // falsePositive, falseNegative, truePositive, trueNegative
+}
+
 const TrialData = {
-    blinkStartedTime: 0,
-    blinkEndedTime: 0,
+    trialNumber: null,
+    blinkStartedTime: null,
+    blinkEndedTime: null,
     didBlink: false,
-    responseCorrect: false,
-    responseTime: 0,
+    didRespond: false,
+    isPause: false,
+    responseTime: null,
 }
 
 const ExperimentData = {
-    Trials: [],
+    TrialsResults: [],
+    TrialsData: [],
 
     getNumberOfTrials: function(){
-        return this.Trials.length;
+        return this.TriaslData.length;
     },
 
-    addTrialData: function(blinkTime, didBlink, responseCorrect, responseTime){
-        this.Trials.push({
-            blinkTime: blinkTime,
-            didBlink: didBlink,
-            responseCorrect: responseCorrect,
-            responseTime: responseTime,
-        });
+    addTrialData: function(data){
+        // validate
+        // check if any of the following fields are null (trialNumber)
+        if(data.trialNumber == null){
+            throw new Error("Trial number is null");
+        }
+        if (data.didBlink && (data.blinkStartedTime == null || data.blinkEndedTime == null)){
+            throw new Error("Blink started or ended time is null");
+        }
+        this.TrialsData.push(data);
+        //calculate results
+        this.addTrialResults(data);
+    },
+
+    addTrialResults: function(data) {
+        let results = Object.create(TrialResults);
+        results.trialNumber = data.trialNumber;
+        if(data.didBlink && data.didRespond){
+            results.result = "truePositive";
+            results.reactionTime = data.responseTime - data.blinkStartedTime;
+        }
+        if((!data.didBlink) && !(data.didRespond)) results.result = "trueNegative";
+        if((!data.didBlink) && data.didRespond) results.result = "falsePositive";
+        if(data.didBlink && !(data.didRespond)) results.result = "falseNegative";
+        results.responseCorrect = results.result == "truePositive" || results.result == "trueNegative"
+        this.TrialsResults.push(results);
     },
 
     calculateStats: function(){
