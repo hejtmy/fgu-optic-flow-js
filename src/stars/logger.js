@@ -6,7 +6,6 @@ const Logger = {
 
     init: function(window, storageName = "experimentLog"){
         var d = new Date();
-        //var timestamp = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
         this.logTimestamp = new Date().getTime();
         this.storageName = storageName;
         this.storage = window.localStorage;
@@ -38,7 +37,7 @@ const Logger = {
     },
 
     logMessage: function(message){
-        this.data[this.logTimestamp].data.push({"time":new Date().getTime(), "content":message});
+        this.data[this.logTimestamp].data.push({"time":this.getTime(), "content":message});
         this.saveToStorage();
     },
 
@@ -70,6 +69,10 @@ const Logger = {
 
     saveToPC: function(){
 
+    },
+    //make static function get time    
+    getTime: function(){
+        return new Date().getTime();
     }
 }
 

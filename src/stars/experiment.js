@@ -1,5 +1,5 @@
-import { StarsController, FlowDirection } from "./stars.js";
 import Logger from "./logger.js";
+import { StarsController, FlowDirection } from "./stars.js";
 import {TrialData, ExperimentData} from "./results.js";
 import {injectMessage} from "../utils.js";
 
