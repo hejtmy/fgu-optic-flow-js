@@ -9,11 +9,12 @@ var canvas = document.getElementById("space");
 let setupWindow = document.getElementById("setup");
 let experimentWindow = document.getElementById("experiment");
 let setupInfo = document.getElementById("setup-info");
+let settingsInfo = document.getElementById("settings-info");
 let fileDropdown = document.getElementById('dropdown-save-files');
 let neuroduinoStatus = document.getElementById("neuroduino-status-info")
+let settingsStorage = window.localStorage;
 
 // MAIN PAGE BUTTONS -------------------
-
 window.addEventListener('resize', function(event) {
     experiment.resize();
 }, true);
@@ -48,10 +49,7 @@ document.getElementById("file-selector").addEventListener('change', (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.addEventListener('load', (event) => {
-        var settings = OpticFlowExperiment.parseSettings(JSON.parse(reader.result));
-        console.log(settings);
-        experiment.init(settings, canvas);
-        setInfoText(setupInfo, experiment);
+        experiment = loadSettings(reader.result, experiment);
     });
     reader.readAsText(file);
 });
@@ -94,6 +92,11 @@ document.getElementById("btn-clear-logs").addEventListener('click', (e) => {
     populateDrowpdown();
 });
 
+document.getElementById("btn-clear-settings").addEventListener('click', (e) => {
+    settingsStorage.removeItem("opticflowSettings");
+    loadAndSetSettings(experiment);
+});
+
 document.addEventListener('keydown', handleKey);
 
 // FUNCTIONS ---------------
@@ -134,19 +137,24 @@ async function neuroduinoBlink(){
     arduinoController.blink();
 }
 
-function setInfoText(setupInfo, experiment){
-    let txt = "";
-    if(experiment.isInitialized()){
-    txt += "Experiment settings loaded: ";
+function loadSettings(data, experiment) {
+    var settings = OpticFlowExperiment.parseSettings(JSON.parse(data));
+    console.log(settings);
+    experiment.init(settings, canvas);
+    setInfoTexts(setupInfo, settingsInfo, experiment, "Experiment settings successufully loaded");
+    settingsStorage.setItem("opticflowSettings", data);
+    return experiment;
+}
+
+function setInfoTexts(setupInfo, settingsInfo, experiment, setupMessage){
+    setupInfo.innerHTML = setupMessage;
+    let txt = "Experiment settings: ";
     txt += experiment.settings.name + "(";
     txt += experiment.settings.version + ")"
-    } else {
-        txt += "Expeirment settings not loaded";
-    }
+    settingsInfo.innerHTML = txt;
     // add arduino info
 
     // add other info
-    setupInfo.innerHTML = txt;
 }
 
 function populateDrowpdown(){
@@ -169,10 +177,20 @@ function finishExperiment(){
     document.getElementById("experiment-buttons").style.display = "block";
 }
 
+function loadAndSetSettings(experiment) {
+    let storedSettings = settingsStorage.getItem("opticflowSettings");
+    if(storedSettings != null) {
+        console.log("Settings found in local storage")
+        experiment.init(OpticFlowExperiment.parseSettings(JSON.parse(storedSettings)), canvas);
+        setInfoTexts(setupInfo, settingsInfo, experiment, "Settings loaded from previous sessions");
+    } else {
+        experiment.init(OpticFlowExperiment.parseSettings(basesettings), canvas);
+        setInfoTexts(setupInfo, settingsInfo, experiment, "No loaded settings found, using default settings");
+    }
+}
+loadAndSetSettings(experiment);
+
 // INITIALIZATION -----------
-experiment.init(OpticFlowExperiment.parseSettings(basesettings), canvas);
 document['experiment'] = experiment;
 experimentWindow.style.display = "none";
-
-setInfoText(setupInfo, experiment);
 populateDrowpdown();
