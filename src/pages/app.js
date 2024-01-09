@@ -37,7 +37,9 @@ document.getElementById('btn-back').addEventListener("click", function(e){
 
 // NEURODUINO CONTROLS ------------------
 document.getElementById('arduino-connect-btn').addEventListener("click", function(e){
-    connectNeuroduino(neuroduinoStatus, document.getElementById('arduino-connect-btn'));
+    connectNeuroduino(neuroduinoStatus,
+        document.getElementById('btn-neuroduino-blink'),
+        document.getElementById('btn-neuroduino-sendPulse'),);
 })
 
 document.getElementById("btn-neuroduino-blink").addEventListener("click", () => {
@@ -128,13 +130,14 @@ function ActivateExperimentCanvas(){
     experimentWindow.style.display = "block";
 }
 
-async function connectNeuroduino(status, btn){
+async function connectNeuroduino(status, blinkBtn, sendPulseBtn){
    status.innerHTML = "Neuroduino is connecting";
    let connected = await arduinoController.connect();
    console.log(connected);
    let txt = `Neuroduino connected: ${connected}`;
    status.innerHTML = txt;
-   btn.disabled = !connected;
+   blinkBtn.disabled = !connected;
+   sendPulseBtn.disabled = !connected;
 }
 
 async function neuroduinoBlink(){
