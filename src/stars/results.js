@@ -15,6 +15,16 @@ const TrialData = {
     responseTime: null,
 }
 
+const ExperimentResults = {
+    correct: null,
+    incorrect: null,
+    ratio_correct: null,
+    ratio_correct_blink: null,
+    average_rt: null,
+    min_rt: null,
+    max_rt: null
+}
+
 const ExperimentData = {
     TrialsResults: [],
     TrialsData: [],
@@ -52,10 +62,31 @@ const ExperimentData = {
     },
 
     calculateStats: function(){
+        let results = Object.create(ExperimentResults);
+        if(TrialResults.length == 0) return results;
+        // for each trial where blink was detected calculate reaction time
+        let correctTrials = this.TrialsResults.filter((e) => e.result == "truePositive" || e.result == "trueNegative")
+        let correctBlinkTrials = this.TrialsResults.filter((e) => e.result == "truePositive")
+        let incorrectTrials = this.TrialsResults.filter((e) => e.result == "falsePositive" || e.result == "falseNegative")
+        // for each trial where blink was not detected calculate reaction time
+        // get reactionTime from all correctTrials
+        if(correctBlinkTrials.length > 0) {
+            results["average_rt"] = math.mean(correctBlinkTrials.map((e) => e.reactionTime));
+            results["min_rt"] = math.min(correctBlinkTrials.map((e) => e.reactionTime));
+            results["max_rt"] = math.max(correctBlinkTrials.map((e) => e.reactionTime));
+        }
+
+        let nTrials = this.TrialsResults.length;
+        results["correct"] = correctTrials.length;
+        results["ratio_correct"] = results["correct"] / nTrials;
+        results["incorrect"] = incorrectTrials.length;
+
+        return results;
         return {
             correct: 666,
             incorrect: 666,
             ratio_correct: 666,
+            ratio_correct_blink:666,
             average_rt: 666,
             min_rt: 666,
             max_rt: 666

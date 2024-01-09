@@ -68,12 +68,11 @@ Pause settings allow for customization of the message. It allows display of conc
 The available variables are:
 - TrialNumber: Current trial number
 - TotalTrials: Number of total trials
+- ExperimentProgress: Number from 1 to 100 determining completion of the procedure
 - Correct: Number of correct trials
 - Incorrect: Number of incorrect trials
-- RatioCorrect: Ratio of correct trials
-- AverageReactionTime: Average reaction time for correct trials
-- MinimalReactionTime: Fastest reaction time for correct trials
-- MaximalReactionTime: Slowest reaction time for correct trials
+- RatioCorrect: Ratio of correct trials from all trials excluding pauses
+- AverageReactionTime, MinimalReactionTime,MaximalReactionTime : Average, minimal and maximal reaction time for correct blink trials
 
 ```json
 {
@@ -81,8 +80,7 @@ The available variables are:
 }
 ```
 
-## Tuts
-https://dev.to/unjavascripter/the-amazing-powers-of-the-web-web-serial-api-3ilc
+## Tuorials for setup
 
 https://github.com/UnJavaScripter/web-serial-example/blob/master/src/app.ts
 

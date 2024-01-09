@@ -4,8 +4,9 @@ import {TrialData, ExperimentData} from "./results.js";
 import {injectMessage} from "../utils.js";
 
 const PauseData = {
-    TrialNumber: 666,
-    TotalTrials: 666,
+    TrialNumber: 999,
+    TotalTrials: 999,
+    ExperimentProgress: 999,
     Correct: 999,
     Incorrect: 999,
     RatioCorrect: 999,
@@ -135,6 +136,7 @@ const OpticFlowExperiment = {
         let pauseData =  Object.create(PauseData);
         pauseData.TrialNumber = this.iTrial;
         pauseData.TotalTrials = this.settings.trials.length;
+        pauseData.ExperimentProgress = Math.round(this.iTrial*100 / this.settings.trials.length);
         pauseData.Correct = trialStats.correct;
         pauseData.Incorrect = trialStats.incorrect;
         pauseData.RatioCorrect = trialStats.ratio_correct;
