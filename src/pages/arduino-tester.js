@@ -25,10 +25,7 @@ document.getElementById('blink-btn').addEventListener('click', async () => {
 document.getElementById('pulseup-btn').addEventListener('click', async () => {
     let timestamp = new Date().getTime();
     console.log(timestamp);
-    arduinoController.pulseUp(callback = () => {
-        let endTimestamp = new Date().getTime();
-        console.log("returned in " + (endTimestamp - timestamp) + "ms");
-    });
+    arduinoController.pulseUp();
 });
 
 document.getElementById('pulsedown-btn').addEventListener('click', async () => {
@@ -42,7 +39,6 @@ async function getSerialMessage() {
 
 connectButton.addEventListener('click', async () => {
     var connected = await arduinoController.connect();
-    console.log("ahsit");
     console.log(connected);
     if(connected){
         connectButton.innerHTML = "Disconnect";

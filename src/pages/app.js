@@ -145,7 +145,7 @@ async function neuroduinoBlink(){
 }
 
 async function neuroduinoSendPulse() {
-    arduinoController.sendPulse();
+    arduinoController.pulseUp();
 }
 
 function loadSettings(data, experiment) {
@@ -163,9 +163,6 @@ function setInfoTexts(setupInfo, settingsInfo, experiment, setupMessage){
     txt += experiment.settings.name + "(";
     txt += experiment.settings.version + ")"
     settingsInfo.innerHTML = txt;
-    // add arduino info
-
-    // add other info
 }
 
 function populateDrowpdown(){
