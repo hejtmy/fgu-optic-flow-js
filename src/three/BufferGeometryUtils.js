@@ -13,10 +13,8 @@ import {
 var BufferGeometryUtils = {
 
 	computeTangents: function ( geometry ) {
-
 		geometry.computeTangents();
 		console.warn( 'THREE.BufferGeometryUtils: .computeTangents() has been removed. Use BufferGeometry.computeTangents() instead.' );
-
 	},
 
 	/**

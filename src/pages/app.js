@@ -1,6 +1,6 @@
-import { OpticFlowExperiment, ExperimentSettings, TrialSettings } from './experiment.js';
-import basesettings from './settings/basesettings.js';
-import serial from './../serial.js';
+import { OpticFlowExperiment } from '../stars/experiment.js';
+import basesettings from '../stars/settings/basesettings.js';
+import serial from '../serial.js';
 
 const arduinoController = new serial.ArduinoController();
 let experiment = OpticFlowExperiment;
@@ -9,12 +9,12 @@ var canvas = document.getElementById("space");
 let setupWindow = document.getElementById("setup");
 let experimentWindow = document.getElementById("experiment");
 let setupInfo = document.getElementById("setup-info");
-let fileDropdown = document.getElementById("dropdown-save-files");
+let settingsInfo = document.getElementById("settings-info");
+let fileDropdown = document.getElementById('dropdown-save-files');
 let neuroduinoStatus = document.getElementById("neuroduino-status-info")
-let btnNeuroduinoBlink = document.getElementById("btn-neuroduino-blink")
+let settingsStorage = window.localStorage;
 
 // MAIN PAGE BUTTONS -------------------
-
 window.addEventListener('resize', function(event) {
     experiment.resize();
 }, true);
@@ -24,6 +24,7 @@ document.getElementById('btn-start-experiment').addEventListener("click", functi
 });
 
 // EXPERIMENT BUTTONS -------------------------
+// Start pause button 
 document.getElementById('btn-start-pause').addEventListener("click", function(e){
     experiment.startExperiment(finishExperiment);
     document.getElementById("experiment-buttons").style.display = "none";
@@ -36,26 +37,30 @@ document.getElementById('btn-back').addEventListener("click", function(e){
 
 // NEURODUINO CONTROLS ------------------
 document.getElementById('arduino-connect-btn').addEventListener("click", function(e){
-    connectNeuroduino();
+    connectNeuroduino(neuroduinoStatus,
+        document.getElementById('btn-neuroduino-blink'),
+        document.getElementById('btn-neuroduino-sendPulse'),);
 })
 
-btnNeuroduinoBlink.addEventListener("click", () => {
+document.getElementById("btn-neuroduino-blink").addEventListener("click", () => {
     neuroduinoBlink();
 })
 
+document.getElementById("btn-neuroduino-sendPulse").addEventListener("click", () => {
+    neuroduinoSendPulse();
+})
+
 // SETTINGS SELECTOR -----------------------
-document.getElementById('file-selector').addEventListener('change', (event) => {
+document.getElementById("file-selector").addEventListener('change', (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.addEventListener('load', (event) => {
-        var settings = OpticFlowExperiment.parseSettings(JSON.parse(reader.result));
-        console.log(settings);
-        experiment.init(settings, canvas);
-        setInfoText(setupInfo, experiment);
+        experiment = loadSettings(reader.result, experiment);
     });
     reader.readAsText(file);
 });
 
+// LOG FILES HANDELING ---------------------
 fileDropdown.addEventListener('change', (e) => {
     console.log(e.target.value);
     var data = experiment.logger.getExperimentData(e.target.value);
@@ -93,9 +98,15 @@ document.getElementById("btn-clear-logs").addEventListener('click', (e) => {
     populateDrowpdown();
 });
 
+document.getElementById("btn-clear-settings").addEventListener('click', (e) => {
+    settingsStorage.removeItem("opticflowSettings");
+    loadAndSetSettings(experiment);
+});
+
 document.addEventListener('keydown', handleKey);
 
 // FUNCTIONS ---------------
+
 function handleKey(key){
     experiment.handleKey(key);
 }
@@ -105,44 +116,53 @@ function tryStartExperiment(){
         alert("Experiment not initialized. Load settings first");
         return;
     }
-    let arduinoConfirmed = false;
-    if(arduinoController.connected){
+
+    let arduinoConfirmed = arduinoController.connected || !experiment.settings.requireArduino || confirm("Arduino not connected, do you want to continue?");
+
+    if (arduinoController.connected) {
         experiment.initNeuroduino(arduinoController);
-        arduinoConfirmed = true;
-    } else {
-        arduinoConfirmed = confirm("Arduino not connected, do you want to condinue?");
     }
-    if(!arduinoConfirmed) return;
+    if(arduinoConfirmed) ActivateExperimentCanvas();
+}
+
+function ActivateExperimentCanvas(){
     setupWindow.style.display = "none";
     experimentWindow.style.display = "block";
 }
 
-async function connectNeuroduino(){
-   neuroduinoStatus.innerHTML = "Neuroduino is connecting";
+async function connectNeuroduino(status, blinkBtn, sendPulseBtn){
+   status.innerHTML = "Neuroduino is connecting";
    let connected = await arduinoController.connect();
    console.log(connected);
    let txt = `Neuroduino connected: ${connected}`;
-   neuroduinoStatus.innerHTML = txt;
-   btnNeuroduinoBlink.disabled = !connected;
+   status.innerHTML = txt;
+   blinkBtn.disabled = !connected;
+   sendPulseBtn.disabled = !connected;
 }
 
 async function neuroduinoBlink(){
     arduinoController.blink();
 }
 
-function setInfoText(setupInfo, experiment){
-    let txt = "";
-    if(experiment.isInitialized()){
-    txt += "Experiment settings loaded: ";
+async function neuroduinoSendPulse() {
+    arduinoController.pulseUp();
+}
+
+function loadSettings(data, experiment) {
+    var settings = OpticFlowExperiment.parseSettings(JSON.parse(data));
+    console.log(settings);
+    experiment.init(settings, canvas);
+    setInfoTexts(setupInfo, settingsInfo, experiment, "Experiment settings successufully loaded");
+    settingsStorage.setItem("opticflowSettings", data);
+    return experiment;
+}
+
+function setInfoTexts(setupInfo, settingsInfo, experiment, setupMessage){
+    setupInfo.innerHTML = setupMessage;
+    let txt = "Experiment settings: ";
     txt += experiment.settings.name + "(";
     txt += experiment.settings.version + ")"
-    } else {
-        txt += "Expeirment settings not loaded";
-    }
-    // add arduino info
-
-    // add other info
-    setupInfo.innerHTML = txt;
+    settingsInfo.innerHTML = txt;
 }
 
 function populateDrowpdown(){
@@ -165,11 +185,20 @@ function finishExperiment(){
     document.getElementById("experiment-buttons").style.display = "block";
 }
 
-// INITIALIZATION -----------
-experiment.init(OpticFlowExperiment.parseSettings(basesettings), canvas);
+function loadAndSetSettings(experiment) {
+    let storedSettings = settingsStorage.getItem("opticflowSettings");
+    if(storedSettings != null) {
+        console.log("Settings found in local storage")
+        experiment.init(OpticFlowExperiment.parseSettings(JSON.parse(storedSettings)), canvas);
+        setInfoTexts(setupInfo, settingsInfo, experiment, "Settings loaded from previous sessions");
+    } else {
+        experiment.init(OpticFlowExperiment.parseSettings(basesettings), canvas);
+        setInfoTexts(setupInfo, settingsInfo, experiment, "No loaded settings found, using default settings");
+    }
+}
+loadAndSetSettings(experiment);
 
+// INITIALIZATION -----------
 document['experiment'] = experiment;
 experimentWindow.style.display = "none";
-
-setInfoText(setupInfo, experiment);
 populateDrowpdown();
