@@ -80,6 +80,9 @@ The available variables are:
 }
 ```
 
+## Packaging
+This is so stupid, but for the love of god I was unable to fix it. When packaging the project using webpack, you need to uncommend the 1st line in results.js and 
+
 ## Tuorials for setup
 
 https://github.com/UnJavaScripter/web-serial-example/blob/master/src/app.ts

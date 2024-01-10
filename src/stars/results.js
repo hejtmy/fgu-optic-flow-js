@@ -1,3 +1,4 @@
+
 const TrialResults = {
     trialNumber: null,
     responseCorrect: null,

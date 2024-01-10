@@ -1,4 +1,5 @@
 if (typeof process === 'undefined') {
+    console.log("loading canvas-txt")
     import('../lib/canvas-txt.js');
 }
 

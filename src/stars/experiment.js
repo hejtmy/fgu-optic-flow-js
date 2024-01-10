@@ -1,7 +1,7 @@
 import Logger from "./logger.js";
 import { StarsController, FlowDirection } from "./stars.js";
-import {TrialData, ExperimentData} from "./results.js";
-import {injectMessage} from "../utils.js";
+import { TrialData, ExperimentData } from "./results.js";
+import { injectMessage } from "../utils.js";
 
 const PauseData = {
     TrialNumber: 999,
@@ -71,8 +71,10 @@ const OpticFlowExperiment = {
         this.settings = this.parseSettings(settingsObj);
         this.starsControler = Object.create(StarsController);
         this.starsControler.initialize(canvas, window);
+
         this.starsControler.OpticFlowSettings.showCross = this.settings.showCross;
         this.starsControler.OpticFlowSettings.showSquare = this.settings.showSquare;
+        this.starsControler.OpticFlowSettings.canvasSize = this.settings.canvasSize;
 
         this.logger = Object.create(Logger);
         this.logger.init(window);

@@ -40,7 +40,9 @@ document.getElementById('btn-showhide').addEventListener('click', function(e){
 
 // Message showing  --------
 document.getElementById('input-message').value = `Toto je pauza. Máte za sebou {TrialNumber} z 
-{TotalTrials} trialů. Váš průměrný čas je {AverageReactionTime} ms. Správně jste zodpověděli {Correct} pokusů. Pro pokračování stiskněte mezerník.`;
+{TotalTrials} trialů. Váš průměrný čas je {AverageReactionTime} ms.
+Správně jste zodpověděli {Correct} pokusů. Pro pokračování stiskněte mezerník.`;
+
 document.getElementById('btn-message').addEventListener('click', function(e){
     starsController.hide();
     //get message from input field
