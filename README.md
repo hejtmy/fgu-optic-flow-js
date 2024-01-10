@@ -5,21 +5,51 @@ Basic JS and CSS taken from the codepan here https://codepen.io/hfer/pen/VQyqLg.
 
 # Requirements
 
+The experiment has been tried on Brave (chrome based) and Safari. It can be administered
+
+## Arduino requirements
 The experiment is delivered as a self contained HTML file. It requires a browser that supports Web Serial API (Chrome, Edge, Opera, Brave, Vivaldi). It also requires an Arduino with a button connected to pin 1. The Arduino needs to be flashed with the neuroduino sketch [https://github.com/hejtmy/neuroduino](https://github.com/hejtmy/neuroduino).
 
-The serial interface is ONLY available when in secure context (therefore https, or loaded from localhost). So serving it from hejtmy.com does not work
+To make the arduino work, you need a web browser with experimental features and Web Serial API enabled. If on chrome, you can enable it by going to `chrome://flags/#enable-experimental-web-platform-features` and `chrome://flags/#enable-web-serial-api` and enabling both.
 
-https://groups.google.com/a/chromium.org/g/chromium-dev/c/pjTmHImvymw
-
-## Arduino
-Web browser with experimental features and Web Serial API enabled.
+```
 chrome://flags/#enable-experimental-web-platform-features
 chrome://flags/#enable-web-serial-api
+```
+The serial interface is ONLY available when in secure context (therefore https, or loaded from localhost). Serving it from hejtmy.com seems to work so far, but there were troubles in the past.
 
-## Controls
-Any valid keypress is Spacebar. It reacts to keys and unpauses the experiemnt during pause section. 
+# Website description 
+You can test the functionality by going to https://hejtmy.com/fgu-optic-flow-js
+
+There are 4 parts to the website.
+- The experiment itself
+- Testing starts visualisation: https://hejtmy.com/fgu-optic-flow-js/public/stars-visualiser.html
+- Testing arduino connection: https://hejtmy.com/fgu-optic-flow-js/public/serial-test.html
+- Deprecated 3dimensional path integration experiment: https://hejtmy.com/fgu-optic-flow-js/public/3d.html
+
+## Testing stars visualisation
+This is a simple visualisation of the stars. It is used to test if the browser supports the required features, how different modes of movememnt work, test out blinking, hiding etc.
+
+It is also used to test message comprehension used in the experiment in pause and final messages. You can format the message using handlebars syntax and see how it will look. See below for more information about message formatting.
+
+## Testing arduino connection
+This is a simple test of the arduino connection. It allows you to connect to the board and test out blinking and pulses. It also allows you to send custom messages and show last message received from the board.
+
+
+# Experiment
+
+The experiment is a simple task where the participant is asked to press a spacebar when the cross in the middle of the screen blinks. The experiemnt can be administered from the online website: https://hejtmy.com/fgu-optic-flow-js/public/experiment.html or downloaded and run locally from https://github.com/hejtmy/fgu-optic-flow-js/tags. You simply save the folder somewhere and open the `index.html` file in your browser.
+
+## Data recording
+
+The experiment saves all settings and data in the context in which it is loaded on your machine. If you run it from localhost from the provided index.html file, it will save the data in your browser's local storage tied to the local file. If you run it from the website, it will save the data in the browser's local storage but this data will NOT show in the local settings. Please backup the data as soon as possible.
+
+Please be aware that the experiment records all keypresses. It is not anonymised and the data is not encrypted. It is stored in the browser's local storage. If you want to use this experiment for research, you need to be aware of the implications of this.
 
 ## Settings 
+
+The experiment is defined in a JSON file. If no json is provided it will use the default settings. The default settings are defined in `public/js/settings.js`. If you want to change the default settings, you can do so in a custom json file and load it using the button on the website. The settings are saved in the browser's local storage and will be loaded automatically next time you open the website.
+
 ```json
 {
     "name":"Base", //name for posteriority
@@ -66,7 +96,10 @@ Any valid keypress is Spacebar. It reacts to keys and unpauses the experiemnt du
 
 **Pause** 
 
-### Movement types
+## Controls
+Any valid keypress is Spacebar. It reacts to keys and unpauses the experiemnt during pause section. 
+
+## Movement types
 
 Movement types are defined using numbers. You can visualise various movement types in the [Will fill this later]()
 
@@ -114,3 +147,5 @@ https://codelabs.developers.google.com/codelabs/web-serial#2
 https://wicg.github.io/serial/
 
 https://web.dev/serial/
+
+https://groups.google.com/a/chromium.org/g/chromium-dev/c/pjTmHImvymw
