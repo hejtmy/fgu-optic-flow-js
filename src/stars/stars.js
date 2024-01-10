@@ -1,4 +1,7 @@
-import '../canvas-txt.js';
+if (typeof process === 'undefined') {
+    import('../lib/canvas-txt.js');
+}
+
 const { drawText } = window.canvasTxt;
 
 //DEFINITIONS ----

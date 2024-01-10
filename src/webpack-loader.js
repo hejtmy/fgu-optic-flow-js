@@ -7,3 +7,6 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import style from '../public/css/style.css';
+
+require('script-loader!./lib/math.js');
+require('script-loader!./lib/canvas-txt.js');

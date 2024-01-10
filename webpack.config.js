@@ -4,19 +4,36 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        bootstrap: './src/bootstrap-loader.js',
         //serial: './src/serial.js',
-        app: './src/pages/app.js',
-        //app: { dependOn: 'serial', import: './src/stars/app.js' },
+        // load code from the scr lib math.js to be available in the app
+        webpackimports: './src/webpack-loader.js',
+        app: {
+            import: './src/pages/app.js',
+            dependOn: ['math', 'webpackimports']
+        },
+        //canvastxt: './src/lib/canvas-txt.js',
+        math:  './src/lib/math.js'
     },
     module:{
         rules:[
         { test: /\.css$/, use: ['style-loader', 'css-loader']},
         ],
     },
+    node: {
+    global: true
+    },
     output: {
         path: path.resolve(__dirname, './dist'),
-        //filename: 'index_bundle.js',
+        globalObject: 'window',
+        //filename: 'appbundle.js',
     },
-    plugins: [new HtmlWebpackPlugin({ template: path.resolve(__dirname, './public/experiment-webpack.html')})],
+    plugins: [
+        new HtmlWebpackPlugin({ template: path.resolve(
+            __dirname, './public/experiment-webpack.html')}),
+        new webpack.DefinePlugin({
+            'process': {
+                WEBPACK_BUILD: JSON.stringify(true)
+                // Add other environment variables here if necessary
+            }
+    })]
 };
