@@ -27,11 +27,12 @@ const TrialSettings = {
     duration: 2000,
     movementType: 0,
     isPause: false,
-    automaticContinue: true
+    automaticContinue: true,
 }
 
 const PauseTrialSettings = {
     isPause: true,
+    wipeBufferedData: false
     // available terms
     // TrialNumber, TotalTrials
     // correct, incorrect, ratio_correct, average_rt, min_rt, max_rt
@@ -101,8 +102,6 @@ const OpticFlowExperiment = {
 
     parseSettings: function(settings){
         var settings = Object.assign(ExperimentSettings, settings);
-        // This doesn't work, it only copies over the fist element :/
-        //settings.trials = settings.trials.map((element) => Object.assign(TrialSettings, element));
         return settings;
     },
     
@@ -127,8 +126,8 @@ const OpticFlowExperiment = {
         this.clearTimeouts();
         this.starsControler.hide();
         let pauseData = this.getPauseData();
-        console.log(this.settings.pauseMessage);
-        let pauseMessage = this.settings.pauseMessage;
+        let pauseMessage = "message" in this.currentTrial ?
+            this.currentTrial.message : this.settings.pauseMessage;
         let msg = injectMessage(pauseMessage, pauseData);
         this.starsControler.showMessage(msg); 
     },
@@ -168,8 +167,15 @@ const OpticFlowExperiment = {
 
     nextTrial: function(){
         this.iTrial += 1;
-        this.currentTrial = this.settings.trials[this.iTrial];
+        this.setCurrentTrialSettings(this.iTrial);
         this.startTrial();
+    },
+
+    setCurrentTrialSettings: function(iTrial){
+        this.currentTrial = this.settings.trials[iTrial];
+        if(!("duration" in this.currentTrial)) {
+            this.currentTrial.duration = this.settings.duration;
+        }
     },
 
     startTrial: function(){
@@ -215,6 +221,9 @@ const OpticFlowExperiment = {
     finishTrial: function(){
         this.data.addTrialData(this.currentTrialData);
         this.logger.logMessage(`trialFinished;${this.iTrial}`);
+        if(this.currentTrial.wipeBufferedData){
+            this.data.wipeData();
+        }
         if(this.checkLastTrial(this.iTrial, this.settings)){
             this.finishExperiment();
             return;
@@ -285,14 +294,16 @@ const OpticFlowExperiment = {
         // 1+ is there because random is 1 exclusive, so we need to add one
         if(!("shouldBlink" in this.currentTrial)) return;
         if(!this.currentTrial.shouldBlink) return;
-        let time = this.settings.blinkInterTrial[0] + 
-            Math.round(Math.random() * (1 + this.settings.blinkInterTrial[1] - this.settings.blinkInterTrial[0]));
+        let blinkTime = 0;
         if("blinkTime" in this.currentTrial){
-            time = this.currentTrial.blinkTime;
+            blinkTime = this.currentTrial.blinkTime;
+        } else {
+            blinkTime = this.settings.blinkInterTrial[0] + 
+                Math.round(Math.random() * (1 + this.settings.blinkInterTrial[1] - this.settings.blinkInterTrial[0]));
         }
         this.blinkTimeout = setTimeout(() => {
             this.blink();
-        }, time);
+        }, blinkTime);
     },
 
     // key handling -----------------------------

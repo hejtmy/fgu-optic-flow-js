@@ -44,8 +44,12 @@ const ExperimentData = {
             throw new Error("Blink started or ended time is null");
         }
         this.TrialsData.push(data);
-        //calculate results
         this.addTrialResults(data);
+    },
+
+    wipeData: function(){
+        this.TrialsData = [];
+        this.TrialsResults = [];
     },
 
     addTrialResults: function(data) {
@@ -83,15 +87,6 @@ const ExperimentData = {
         results["incorrect"] = incorrectTrials.length;
 
         return results;
-        return {
-            correct: 666,
-            incorrect: 666,
-            ratio_correct: 666,
-            ratio_correct_blink:666,
-            average_rt: 666,
-            min_rt: 666,
-            max_rt: 666
-        }
     }
 }
 

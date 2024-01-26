@@ -14,11 +14,13 @@ export default {
             "movementType": 0
         },
         {
-            "duration": 1500,
             "movementType": 1
         },
         {
             "isPause": true,
+            "message": "This will auto continue after 3 seconds",
+            "automaticContinue": true,
+            "duration": 3000
         },
         {
             "duration": 1500,
@@ -31,8 +33,24 @@ export default {
             "movementType": 3
         },
         {
+            "isPause": true,
+            "wipeBufferedData": true,
+            "message": "This will not autocontinue. Press space to continue. This is trial {TrialNumber}. Success rate is {RatioCorrect}. Wiping results."
+        },
+
+        {
             "duration": 1500,
-            "movementType": 4
+            "movementType": 4,
+            "shouldBlink": true
+        },
+        {
+            "duration": 2000,
+            "movementType": 0,
+        },
+        {
+            "isPause": true,
+            "wipeBufferedData": true,
+            "message": "This is trial {TrialNumber}. Success rate is {RatioCorrect}. Press space to continue."
         },
         {
             "duration": 1500,

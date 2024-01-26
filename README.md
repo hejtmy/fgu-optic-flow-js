@@ -92,15 +92,32 @@ The experiment is defined in a JSON file. If no json is provided it will use the
 
 **Blinking** If the trial should blink, it needs to set property "shouldBlink" to true. If blink should occur at designated time, "blinkTime" in ms should be set. DO NOT forget to set blink duration. If trial is 1000ms long and blink time 200, do NOT start blink later than 750ms or so, otherwise the blink might be cut short etc.. At this point, 
 
-**Recordingkeypresses** All keypresses ar recorder. Only SPACE works as a blink reaction.
+**Recording keypresses** All keypresses ar recorded. Only SPACE works as a blink reaction.
 
-**Pause** 
+### Experiment settings parameters
 
-## Controls
-Any valid keypress is Spacebar. It reacts to keys and unpauses the experiemnt during pause section. 
+All are written in the `parameter (type: default value)` format
 
-## Movement types
+- name (string): name for posteriority
+- duration (int: 1000): trial duration in ms.
+- blinkDuration (int: 200): duration of blink in ms
+- canvasSize (dict{"x"(int: 500), "y"(int: 500)}): size of the canvas in px
+- showSquare (bool: true): should there be a black square in the middle of all the time
+- blinkInterTrial [int: 800, int:1200]: Defines in ms how long from the start should the blink start. It is a random number between the two values. This can be overriden in individual trials using a fixed value
+- showCross (bool: true): should there be a fixation cross at all time
+- requireArduino (bool: true): //if user is warned if arduino is not present. Can still continue, false just disables the warning
+- pauseMessage (string: "Press space to continue"): message to be displayed. See below for formatting and options. Can be overriden in individual trials (see pause specific settings)
+- finalMessage (string: "Thank you for your time"): message at the end of the experiment. allows same formatting as pauseMessage ("Thank you for your time")
 
+### Trial settings parameters
+
+**Regular trial specific settings**
+- duration (int: 1500): duration in ms. Overrides base duration
+- movementType (int: 0): type of movement, see below
+- shouldBlink (bool: true): if true, this trial will blink
+- blinkTime (int: 400): in ms, when the blink should start.
+
+**Movement Types**
 Movement types are defined using numbers. You can visualise various movement types in the [Will fill this later]()
 
 - 0: radial in
@@ -110,14 +127,21 @@ Movement types are defined using numbers. You can visualise various movement typ
 - 4: random
 - 5: none (still)
 
-### Pause settings
+**Pause specific settings**
 
 If the trial is to be pause trial, it needs to set "isPause" to true. Pauses are unpaused with spacebar or automatically continued if "automaticContinue" is set to true. If automatic continue is set to true, the pause will be unpaused after the time set in "duration" in ms.
 
+- isPause (bool: false): if true, starts pause trial
+- automaticContinue (bool: false): if true, will automatically continue after 5time determined in "duration"
+- duration (int: 1000): if automatic continue is set, duration determines when it will happen
+- wipeBufferedData (bool: false): If true, wipes data
+- message (string: null): message to be displayed. Overwrites pauseMessage See below for formatting and options
+
+## Controls
+Any valid keypress is Spacebar. It reacts to keys and unpauses the experiemnt during pause section. 
+
 ## Message formatting
 During pauses and after the experiment a message can be shown. It is defined in the settings in the "pauseMessage" and "finalMessage" properties.
-
-
 
 These message allow for injecting some information about the state of the experiment to customize the message for each participant. The string is constructed using javascript handlebars syntax `{variable name}` to insert variables (do not use basic javascript interpolation (using `${variable name}`), it will not work).
 
@@ -130,6 +154,7 @@ These message allow for injecting some information about the state of the experi
 This message will be displayed as "Press spacebar to continue. Trial 1 of 10." if the experiment is on the first trial of 10. 
 
 The available variables which can be injected during each message are:
+
 - TrialNumber: Current trial number
 - TotalTrials: Number of total trials
 - ExperimentProgress: Number from 1 to 100 determining completion of the procedure
