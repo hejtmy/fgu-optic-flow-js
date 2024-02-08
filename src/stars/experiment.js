@@ -9,10 +9,15 @@ const PauseData = {
     ExperimentProgress: 999,
     Correct: 999,
     Incorrect: 999,
-    RatioCorrect: 999,
-    AverageReactionTime: 999,
-    MinimalReactionTime: 999,
-    MaximalReactionTime: 999,
+    RatioCorrect: 0.999,
+    AvgReactionTimeMs: 999,
+    AverageReactionTimeSec: 9.99,
+    MinReactionTimeMs: 999,
+    MinReactionTimeSec: 9.99,
+    MaxReactionTimeMs: 999,
+    MaxReactionTimeSec: 9.99,
+    PercentCorrect: 99,
+
 }
 
 const ExpeirimentState = Object.freeze({
@@ -141,9 +146,13 @@ const OpticFlowExperiment = {
         pauseData.Correct = trialStats.correct;
         pauseData.Incorrect = trialStats.incorrect;
         pauseData.RatioCorrect = trialStats.ratio_correct;
-        pauseData.AverageReactionTime = trialStats.average_rt;
-        pauseData.MinimalReactionTime = trialStats.min_rt;
-        pauseData.MaximalReactionTime = trialStats.max_rt;
+        pauseData.PercentCorrect = Math.round(trialStats.ratio_correct * 100);
+        pauseData.AvgReactionTimeMs = Math.round(trialStats.average_rt);
+        pauseData.AverageReactionTimeSec = Math.round(trialStats.average_rt * 100) / 100;
+        pauseData.MinReactionTimeMs = Math.round(trialStats.min_rt);
+        pauseData.MinReactionTimeSec = Math.round(trialStats.min_rt * 100) / 100;
+        pauseData.MaxReactionTimeMs = Math.round(trialStats.max_rt);
+        pauseData.MaxReactionTimeSec = Math.round(trialStats.max_rt * 100) / 100;
         return pauseData;
     },
 

@@ -161,7 +161,9 @@ The available variables which can be injected during each message are:
 - Correct: Number of correct trials
 - Incorrect: Number of incorrect trials
 - RatioCorrect: Ratio of correct trials from all trials excluding pauses
-- AverageReactionTime, MinimalReactionTime, MaximalReactionTime : Average, minimal and maximal reaction time for correct blink trials
+- PercentageCorrect: Percentage of correct trials from all trials excluding pauses
+- AvgReactionTimeMs, MinReactionTimeMs, MaxReactionTimeMax : Average, minimal and maximal reaction time for correct blink trials in miliseconds. Rounded to whole numbers
+- AvgReactionTimeSec, MinReactionTimeSec, MaxReactionTimeSec : Average, minimal and maximal reaction time for correct blink trials in seconds. Rounded to 2 decimal places
 
 ## Tuorials for setup
 

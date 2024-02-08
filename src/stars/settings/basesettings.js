@@ -1,12 +1,12 @@
 export default {
     "name":"Base",
     "duration":1000,
-    "canvasSize":{"x":500, "y":500},
+    "canvasSize": {"x":500, "y":500},
     "showSquare":false,
     "showCross":true,
     "requireArduino":false,
     "pauseMessage": "You have completed {TrialNumber} out of {TotalTrials}. Press Spacebar to continue", //message to be displayed. See below for formatting
-    "trials":[
+    "trials": [
         {
             "duration": 1500,
             "shouldBlink": true,
