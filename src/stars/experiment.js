@@ -9,6 +9,8 @@ const PauseData = {
     ExperimentProgress: 999,
     Correct: 999,
     Incorrect: 999,
+    CorrectBlink: 999,
+    IncorrectBlink: 999,
     RatioCorrect: 0.999,
     AvgReactionTimeMs: 999,
     AverageReactionTimeSec: 9.99,
@@ -17,7 +19,6 @@ const PauseData = {
     MaxReactionTimeMs: 999,
     MaxReactionTimeSec: 9.99,
     PercentCorrect: 99,
-
 }
 
 const ExpeirimentState = Object.freeze({
@@ -145,6 +146,8 @@ const OpticFlowExperiment = {
         pauseData.ExperimentProgress = Math.round(this.iTrial*100 / this.settings.trials.length);
         pauseData.Correct = trialStats.correct;
         pauseData.Incorrect = trialStats.incorrect;
+        pauseData.CorrectBlink = trialStats.correct_blink;
+        pauseData.IncorrectBlink = trialStats.incorrect_blink;
         pauseData.RatioCorrect = trialStats.ratio_correct;
         pauseData.PercentCorrect = Math.round(trialStats.ratio_correct * 100);
         pauseData.AvgReactionTimeMs = Math.round(trialStats.average_rt);
@@ -174,7 +177,7 @@ const OpticFlowExperiment = {
         this.starsControler.showMessage(msg);
     },
 
-    nextTrial: function(){
+    nextTrial: function() {
         this.iTrial += 1;
         this.setCurrentTrialSettings(this.iTrial);
         this.startTrial();

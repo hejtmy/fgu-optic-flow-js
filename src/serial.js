@@ -106,7 +106,7 @@ class SerialController {
         return await this.writer.write(dataArrayBuffer);
     }
 
-    stopReading(){
+    stopReading() {
         this.isReading = false;
     }
 

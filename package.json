@@ -1,6 +1,6 @@
 {
   "name": "optic-flow",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "Javascript demonstration of the optic flow",
   "main": "webpack.config.js",
   "scripts": {

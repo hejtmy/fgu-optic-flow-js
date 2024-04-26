@@ -1,5 +1,6 @@
 export default {
     "name":"Base",
+    "version":"",
     "duration":1000,
     "canvasSize": {"x":500, "y":500},
     "showSquare":false,
@@ -37,7 +38,6 @@ export default {
             "wipeBufferedData": true,
             "message": "This will not autocontinue. Press space to continue. This is trial {TrialNumber}. Success rate is {RatioCorrect}. Wiping results."
         },
-
         {
             "duration": 1500,
             "movementType": 4,

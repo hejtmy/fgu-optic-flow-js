@@ -99,6 +99,7 @@ The experiment is defined in a JSON file. If no json is provided it will use the
 All are written in the `parameter (type: default value)` format
 
 - name (string): name for posteriority
+- version (string: "1.0"): name of the version
 - duration (int: 1000): trial duration in ms.
 - blinkDuration (int: 200): duration of blink in ms
 - canvasSize (dict{"x"(int: 500), "y"(int: 500)}): size of the canvas in px
@@ -158,8 +159,8 @@ The available variables which can be injected during each message are:
 - TrialNumber: Current trial number
 - TotalTrials: Number of total trials
 - ExperimentProgress: Number from 1 to 100 determining completion of the procedure
-- Correct: Number of correct trials
-- Incorrect: Number of incorrect trials
+- Correct, CorrectBlink: Number of correct trials (true negatives and true positives) or only correct blink trials (only true positives)
+- Incorrect, IncorrectBlink: Number of incorrect trials (false negatives and false positives) or only false negatives (missed) blink trials
 - RatioCorrect: Ratio of correct trials from all trials excluding pauses
 - PercentageCorrect: Percentage of correct trials from all trials excluding pauses
 - AvgReactionTimeMs, MinReactionTimeMs, MaxReactionTimeMax : Average, minimal and maximal reaction time for correct blink trials in miliseconds. Rounded to whole numbers

@@ -20,8 +20,11 @@ const ExperimentResults = {
     correct: null,
     incorrect: null,
     ratio_correct: null,
+    correct_blink: null,
+    incorrect_blink: null,
     ratio_correct_blink: null,
-    average_rt: null,
+    ration_incorrect_blink: null,
+    average_rt: null, 
     min_rt: null,
     max_rt: null
 }
@@ -30,11 +33,11 @@ const ExperimentData = {
     TrialsResults: [],
     TrialsData: [],
 
-    getNumberOfTrials: function(){
+    getNumberOfTrials: function() {
         return this.TriaslData.length;
     },
 
-    addTrialData: function(data){
+    addTrialData: function(data) {
         // validate
         // check if any of the following fields are null (trialNumber)
         if(data.trialNumber == null){
@@ -66,13 +69,14 @@ const ExperimentData = {
         this.TrialsResults.push(results);
     },
 
-    calculateStats: function(){
+    calculateStats: function() {
         let results = Object.create(ExperimentResults);
         if(TrialResults.length == 0) return results;
         // for each trial where blink was detected calculate reaction time
         let correctTrials = this.TrialsResults.filter((e) => e.result == "truePositive" || e.result == "trueNegative")
         let correctBlinkTrials = this.TrialsResults.filter((e) => e.result == "truePositive")
         let incorrectTrials = this.TrialsResults.filter((e) => e.result == "falsePositive" || e.result == "falseNegative")
+        let incorrectBlinkTrials = this.TrialsResults.filter((e) => e.result == "falseNegative")
         // for each trial where blink was not detected calculate reaction time
         // get reactionTime from all correctTrials
         if(correctBlinkTrials.length > 0) {
@@ -82,6 +86,9 @@ const ExperimentData = {
         }
 
         let nTrials = this.TrialsResults.length;
+
+        results["correct_blink"] = correctBlinkTrials.length;
+        results["incorrect_blink"] = incorrectBlinkTrials.length;
         results["correct"] = correctTrials.length;
         results["ratio_correct"] = results["correct"] / nTrials;
         results["incorrect"] = incorrectTrials.length;
