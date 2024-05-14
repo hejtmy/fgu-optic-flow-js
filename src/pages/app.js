@@ -10,16 +10,17 @@ let setupWindow = document.getElementById("setup");
 let experimentWindow = document.getElementById("experiment");
 let setupInfo = document.getElementById("setup-info");
 let settingsInfo = document.getElementById("settings-info");
-let fileDropdown = document.getElementById('dropdown-save-files');
+const fileDropdown = document.getElementById('dropdown-save-files');
 let neuroduinoStatus = document.getElementById("neuroduino-status-info")
 let settingsStorage = window.localStorage;
+const btnStartExperiment = document.getElementById('btn-start-experiment');
 
 // MAIN PAGE BUTTONS -------------------
 window.addEventListener('resize', function(event) {
     experiment.resize();
 }, true);
 
-document.getElementById('btn-start-experiment').addEventListener("click", function(e){
+btnStartExperiment.addEventListener("click", function(e){
     tryStartExperiment();
 });
 
@@ -196,9 +197,44 @@ function loadAndSetSettings(experiment) {
         setInfoTexts(setupInfo, settingsInfo, experiment, "No loaded settings found, using default settings");
     }
 }
+
+function getStorageSize() {
+    //taken from  https://stackoverflow.com/a/15720835/6058105
+    var _lsTotal = 0,
+    _xLen, _x;
+    for (_x in localStorage) {
+        if (!localStorage.hasOwnProperty(_x)) {
+            continue;
+        }
+        _xLen = ((localStorage[_x].length + _x.length) * 2);
+        _lsTotal += _xLen;
+        console.log(_x.substr(0, 50) + " = " + (_xLen / 1024).toFixed(2) + " KB")
+    };
+    console.log("Total = " + (_lsTotal / 1024).toFixed(2) + " KB");
+    return _lsTotal;
+}
+
+
+// returns true if storage is larger than 4MB
+function checkForFullStorage(safe_margin = 4096) {
+    let storageSize = getStorageSize();
+    const full = (storageSize / 1024) > safe_margin;
+    if (full) {
+        alert("Local storage is full, please clear some data and reload the page");
+        btnStartExperiment.disabled = true;
+    } 
+}
+
 loadAndSetSettings(experiment);
 
 // INITIALIZATION -----------
 document['experiment'] = experiment;
 experimentWindow.style.display = "none";
 populateDrowpdown();
+checkForFullStorage();
+
+function addDataToLocalStorage() {
+    let data = 'a'.repeat(4 * 1024 * 1024 / 2);
+    localStorage.setItem('largeData', data);
+
+}
