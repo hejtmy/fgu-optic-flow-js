@@ -29,7 +29,16 @@ const ExperimentResults = {
     max_rt: null
 }
 
+const CreateErrorData = function(msg) {
+    let data = Object.create(TrialData);
+    data.trialNumber = msg;
+    return data;
+}
+
 const ExperimentData = {
+    // This object generally holds the data for the experiment, but NOT the long-term data
+    // the logging procedure is independent and writes to the database
+
     TrialsResults: [],
     TrialsData: [],
 
@@ -38,19 +47,23 @@ const ExperimentData = {
     },
 
     addTrialData: function(data) {
-        // validate
-        // check if any of the following fields are null (trialNumber)
-        if(data.trialNumber == null){
-            throw new Error("Trial number is null");
+        let errorMsg = "";
+        if(data.trialNumber == null) {
+            errorMsg = "Trial number is null";
         }
-        if (data.didBlink && (data.blinkStartedTime == null || data.blinkEndedTime == null)){
-            throw new Error("Blink started or ended time is null");
+        if (data.didBlink && (data.blinkStartedTime == null || data.blinkEndedTime == null)) {
+            errorMsg = "Blink started or ended time is null";
+        }
+        if(errorMsg != "") {
+            console.log(msg);
+            this.TrialsData.push(CreateErrorData(msg));
+            return;
         }
         this.TrialsData.push(data);
         this.addTrialResults(data);
     },
 
-    wipeData: function(){
+    wipeData: function() {
         this.TrialsData = [];
         this.TrialsResults = [];
     },
@@ -86,7 +99,6 @@ const ExperimentData = {
         }
 
         let nTrials = this.TrialsResults.length;
-
         results["correct_blink"] = correctBlinkTrials.length;
         results["incorrect_blink"] = incorrectBlinkTrials.length;
         results["correct"] = correctTrials.length;
