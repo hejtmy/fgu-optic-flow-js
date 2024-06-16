@@ -13,7 +13,7 @@ const PauseData = {
     IncorrectBlink: 999,
     RatioCorrect: 0.999,
     AvgReactionTimeMs: 999,
-    AverageReactionTimeSec: 9.99,
+    AvgReactionTimeSec: 9.99,
     MinReactionTimeMs: 999,
     MinReactionTimeSec: 9.99,
     MaxReactionTimeMs: 999,
@@ -151,7 +151,7 @@ const OpticFlowExperiment = {
         pauseData.RatioCorrect = trialStats.ratio_correct;
         pauseData.PercentCorrect = Math.round(trialStats.ratio_correct * 100);
         pauseData.AvgReactionTimeMs = Math.round(trialStats.average_rt);
-        pauseData.AverageReactionTimeSec = Math.round(trialStats.average_rt * 100) / 100;
+        pauseData.AvgReactionTimeSec = Math.round(trialStats.average_rt * 100) / 100;
         pauseData.MinReactionTimeMs = Math.round(trialStats.min_rt);
         pauseData.MinReactionTimeSec = Math.round(trialStats.min_rt * 100) / 100;
         pauseData.MaxReactionTimeMs = Math.round(trialStats.max_rt);
@@ -345,8 +345,8 @@ const OpticFlowExperiment = {
     },
     
     handleTrialSpacebar: function(key) {
-        if(key.code != 'Space') return false;
         if(this.currentTrial.isPause) return false;
+        if(key.code != 'Space') return false;
         this.currentTrialData.didRespond = true;
         this.currentTrialData.responseTime = this.logger.getTime();
     }
